@@ -1,0 +1,6 @@
+.vs
+*.vcxproj.user
+.git/
+bin/
+bin-int/
+VKProject/user.cfg
