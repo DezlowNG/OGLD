@@ -12,6 +12,8 @@
 
 #include <Components/PointLight/PointLight.h>
 
+#include <Core/Renderer/RegisterObject.h>
+
 const unsigned int WINDOW_WIDTH = 1600;
 const unsigned int WINDOW_HEIGHT = 900;
 
@@ -36,14 +38,18 @@ public:
 		glfwSetInputMode(GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		glfwSetCursorPosCallback(GetWindow(), mouse_callback);
 
-		mesh = Mesh::Mesh("../Assets/Objects/nanosuit/nanosuit.obj");
+		stbi_set_flip_vertically_on_load(true);
+
+		mesh = Mesh::Mesh("../Assets/Objects/backpack/backpack.obj");
+
+		stbi_set_flip_vertically_on_load(false);
 
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		glEnable(GL_SAMPLES);
 
 		mesh.Scale(glm::vec3(0.1f, 0.1f, 0.1f));
-		mesh.Translate(glm::vec3(0.0f, -10.0f, -25.0f));
+		mesh.Translate(glm::vec3(0.0f, -2.0f, -25.0f));
 
 		std::vector<std::string> sbfaces = {
 			"../Assets/Textures/SkyBox/right.jpg",
@@ -60,9 +66,11 @@ public:
 
 		light.SetPosition(glm::vec3(0.0f, 0.5f, -1.25f));
 
-		RegisterObject<PointLight&>(light);
-		RegisterObject<Cube&>(cube);
-		RegisterObject<Mesh&>(mesh);
+		Renderer::RegisterObject<Camera&>(camera);
+		Renderer::RegisterObject<PointLight&>(light);
+		Renderer::RegisterObject<Cube&>(cube);
+		Renderer::RegisterObject<Mesh&>(mesh);
+		Renderer::RegisterObject<SkyBox&>(skybox);
 	}
 
 	void ApplicationInput(float delta) override
@@ -75,7 +83,7 @@ public:
 
 	void ApplicationUpdate(float delta) override
 	{
-		skybox.Draw(glm::mat4(glm::mat3(camera.GetViewMatrix())), camera.Projection);
+		skybox.Draw();
 
 		mesh.Draw();
 

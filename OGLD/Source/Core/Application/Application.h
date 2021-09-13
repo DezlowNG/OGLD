@@ -12,10 +12,6 @@
 #include <imgui/imgui_impl_opengl3.h>
 
 #include <Components/Camera/Camera.h>
-#include <Components/PointLight/PointLight.h>
-#include <Components/Mesh/Mesh.h>
-#include <Components/SkyBox/SkyBox.h>
-#include <Components/Objects/Cube/Cube.h>
 
 class Application
 {
@@ -40,26 +36,9 @@ public:
 protected:
 	GLFWwindow* GetWindow() { return mWindow; }
 
-	template<class T>
-	void RegisterObject(T object)
-	{
-		static_assert("Sdsaads");
-	}
-
-	template<>
-	void RegisterObject<PointLight&>(PointLight& light) { this->mLight = &light; mLight->RegisterCamera(camera); }
-
-	template<>
-	void RegisterObject<Cube&>(Cube& cube) { cube.RegisterLight(*mLight); }
-
-	template<>
-	void RegisterObject<Mesh&>(Mesh& mesh) { mesh.RegisterLight(*mLight); }
-
 private:
 	void InitImGui();
 	void DestroyImGui();
-
-	PointLight* mLight;
 
 	GLFWwindow* mWindow = nullptr;
 };

@@ -125,12 +125,12 @@ SkyBox::SkyBox(std::vector<std::string> faces)
 	shader.setInt("skybox", 0);
 }
 
-void SkyBox::Draw(glm::mat4 view, glm::mat4 proj)
+void SkyBox::Draw()
 {
 	glDepthFunc(GL_LEQUAL);
 	shader.use();
-	shader.setMat4("view", view);
-	shader.setMat4("projection", proj);
+	shader.setMat4("view", glm::mat4(glm::mat3(light->camera->GetViewMatrix())));
+	shader.setMat4("projection", light->camera->Projection);
 
 	glBindVertexArray(VAO);
 	glActiveTexture(GL_TEXTURE0);

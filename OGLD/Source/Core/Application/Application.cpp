@@ -61,9 +61,6 @@ void Application::Run(const unsigned int width, const unsigned int height, const
 
 		camera.Projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
 
-		glViewport(0, 0, width, height);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		ApplicationInput(deltaTime);
 		ApplicationUpdate(deltaTime);
 
