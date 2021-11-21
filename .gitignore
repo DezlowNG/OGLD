@@ -1,5 +1,7 @@
-.vs
-*.vcxproj.user
+.vs/
+.idea/
 .git/
+*.vcxproj.user
 bin/
-bin-int/
+Demos/*/cmake-build-debug
+Demos/*/cmake-build-release
