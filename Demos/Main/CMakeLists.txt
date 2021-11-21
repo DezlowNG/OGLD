@@ -1,0 +1,31 @@
+cmake_minimum_required(VERSION 3.20)
+project(OGLD_DEMO_MAIN)
+
+set(CMAKE_CXX_STANDARD 20)
+
+set(CMAKE_BINARY_DIR "../../../bin/${CMAKE_PROJECT_NAME}")
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+
+foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
+    string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
+    set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR} )
+    set( CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR} )
+    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${CMAKE_BINARY_DIR} )
+endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
+
+include_directories(../../OGLD/Source/)
+
+file(GLOB SOURCE_FILES
+        "*.h"
+        "*.cpp"
+        )
+
+add_executable(OGLD_DEMO_MAIN
+        ${SOURCE_FILES}
+        )
+
+add_subdirectory(../../OGLD/ ${CMAKE_BINARY_DIR})
+
+target_link_libraries(${CMAKE_PROJECT_NAME}
+        OGLD_LIBRARY
+        )
