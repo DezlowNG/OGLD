@@ -3,7 +3,7 @@ project(OGLD_DEMO_MAIN)
 
 set(CMAKE_CXX_STANDARD 20)
 
-set(CMAKE_BINARY_DIR "../../../bin/${CMAKE_PROJECT_NAME}")
+set(CMAKE_BINARY_DIR "../../../bin/${CMAKE_PROJECT_NAME}/${CMAKE_SYSTEM_NAME}")
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
@@ -16,8 +16,8 @@ endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 include_directories(../../OGLD/Source/)
 
 file(GLOB SOURCE_FILES
-        "*.h"
-        "*.cpp"
+        "Source/*.h"
+        "Source/*.cpp"
         )
 
 add_executable(OGLD_DEMO_MAIN
