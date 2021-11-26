@@ -5,15 +5,55 @@
 #include <stdexcept>
 #include <iostream>
 #include "Application.h"
-#include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
-ogld::Application::Application()
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    gl::Viewport(0, 0, width, height);
+}
+
+bool ogld::Application::MainLoop()
+{
+    AppInit();
+
+    glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
+
+    double lastFrame = 0.0f;
+
+    while (!glfwWindowShouldClose(mWindow))
+    {
+        glfwPollEvents();
+
+        double currentFrame = glfwGetTime();
+        mAppDelta = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        gl::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+
+        if (!AppUpdate())
+        {
+            return false;
+        }
+
+        glfwSwapBuffers(mWindow);
+    }
+
+    return true;
+}
+
+ogld::Application::~Application()
+{
+    glfwDestroyWindow(mWindow);
+    glfwTerminate();
+}
+
+void ogld::Application::Run()
 {
     glfwInit();
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     mWindow = glfwCreateWindow(properties.width, properties.height, properties.title, nullptr, nullptr);
 
@@ -27,33 +67,7 @@ ogld::Application::Application()
     glfwMakeContextCurrent(mWindow);
     glfwSwapInterval(1);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        glfwDestroyWindow(mWindow);
-        glfwTerminate();
-        std::runtime_error("OGLD: Failed to init glad!");
-    }
+    gl::Enable(gl::DEPTH_TEST);
 
     MainLoop();
-}
-
-bool ogld::Application::MainLoop()
-{
-    while (!glfwWindowShouldClose(mWindow))
-    {
-        glfwPollEvents();
-
-        glClearColor(1.0f, 0.25f, 0.25f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glfwSwapBuffers(mWindow);
-    }
-
-    return true;
-}
-
-ogld::Application::~Application()
-{
-    glfwDestroyWindow(mWindow);
-    glfwTerminate();
 }
