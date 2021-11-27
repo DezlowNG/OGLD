@@ -8,25 +8,30 @@
 #include <unordered_map>
 #include "../OpenGL/gl_core_4_5.hpp"
 
-class Shader
+namespace ogld
 {
-public:
-    Shader() = default;
-    ~Shader() { gl::DeleteShader(mID); }
+    class Shader
+    {
+    public:
+        Shader() = default;
 
-    inline void Use() const { gl::UseProgram(mID); }
+        ~Shader() { gl::DeleteShader(mID); }
 
-    void LoadFromFile(const char* vertexPath, const char* fragmentPath);
-    void LoadFromSource(const char* vertexSource, const char* fragmentSource);
+        inline void Use() const { gl::UseProgram(mID); }
 
-    template<class T>
-    void SetUniform(const char* uniformName, const T& value) {}
-private:
-    mutable std::unordered_map<const char*, GLint> mUniformLocationCache;
-    uint32_t mID;
+        void LoadFromFile(const char* vertexPath, const char* fragmentPath);
 
-    GLint GetUniformLocation(const char* name) const;
-};
+        void LoadFromSource(const char* vertexSource, const char* fragmentSource);
 
+        template<class T>
+        void SetUniform(const char* uniformName, const T& value) {}
+
+    private:
+        mutable std::unordered_map<const char*, GLint> mUniformLocationCache;
+        uint32_t mID;
+
+        GLint GetUniformLocation(const char* name) const;
+    };
+}
 
 #endif //OGLD_MAIN_SHADER_H

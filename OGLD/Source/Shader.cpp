@@ -14,7 +14,7 @@ uint32_t CreateFragmentShader(const char* shaderSrc);
 uint32_t CreateProgram(const uint32_t& vertexShaderID, const uint32_t& fragmentShaderID);
 void CheckCompileErrors(const uint32_t& shader, const char* type);
 
-void Shader::LoadFromSource(const char* vertexSource, const char* fragmentSource)
+void ogld::Shader::LoadFromSource(const char* vertexSource, const char* fragmentSource)
 {
     unsigned int vertex, fragment;
 
@@ -38,7 +38,7 @@ void Shader::LoadFromSource(const char* vertexSource, const char* fragmentSource
     gl::DeleteShader(fragment);
 }
 
-void Shader::LoadFromFile(const char* vertexPath, const char* fragmentPath)
+void ogld::Shader::LoadFromFile(const char* vertexPath, const char* fragmentPath)
 {
     std::string vertexShaderSrc;
     std::string fragmentShaderSrc;
@@ -79,7 +79,7 @@ void Shader::LoadFromFile(const char* vertexPath, const char* fragmentPath)
     gl::DeleteShader(fragmentShader);
 }
 
-GLint Shader::GetUniformLocation(const char* name) const
+GLint ogld::Shader::GetUniformLocation(const char* name) const
 {
     if (mUniformLocationCache.find(name) != mUniformLocationCache.end())
         return mUniformLocationCache[name];
@@ -151,19 +151,19 @@ void CheckCompileErrors(const uint32_t& shader, const char* type)
 }
 
 template<>
-void Shader::SetUniform<float>(const char* uniformName, const float& value)
+void ogld::Shader::SetUniform<float>(const char* uniformName, const float& value)
 {
     gl::Uniform1f(GetUniformLocation(uniformName), value);
 }
 
 template<>
-void Shader::SetUniform<glm::vec3>(const char* uniformName, const glm::vec3& value)
+void ogld::Shader::SetUniform<glm::vec3>(const char* uniformName, const glm::vec3& value)
 {
     gl::Uniform3fv(GetUniformLocation(uniformName), 1, &value[0]);
 }
 
 template<>
-void Shader::SetUniform<glm::mat4>(const char* uniformName, const glm::mat4& value)
+void ogld::Shader::SetUniform<glm::mat4>(const char* uniformName, const glm::mat4& value)
 {
     gl::UniformMatrix4fv(GetUniformLocation(uniformName), 1, gl::FALSE_, &value[0][0]);
 }

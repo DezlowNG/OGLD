@@ -14,8 +14,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 bool ogld::Application::MainLoop()
 {
-    AppInit();
-
     glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
 
     double lastFrame = 0.0f;
@@ -31,10 +29,7 @@ bool ogld::Application::MainLoop()
         gl::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
-        if (!AppUpdate())
-        {
-            return false;
-        }
+        if (!AppUpdate()) return false;
 
         glfwSwapBuffers(mWindow);
     }
@@ -53,7 +48,7 @@ void ogld::Application::Run()
     glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     mWindow = glfwCreateWindow(properties.width, properties.height, properties.title, nullptr, nullptr);
 
@@ -61,7 +56,7 @@ void ogld::Application::Run()
     {
         glfwDestroyWindow(mWindow);
         glfwTerminate();
-        std::runtime_error("OGLD: Failed to create window!");
+        throw std::runtime_error("OGLD: Failed to create window!");
     }
 
     glfwMakeContextCurrent(mWindow);
@@ -69,5 +64,9 @@ void ogld::Application::Run()
 
     gl::Enable(gl::DEPTH_TEST);
 
-    MainLoop();
+    if (!AppInit())
+        throw std::runtime_error("OGLD: Failed to call AppInit function! Please, check your code for errors!");
+
+    if (!MainLoop())
+        throw std::runtime_error("OGLD: Failed to call AppUpdate function! Please, check your code for errors!");
 }
