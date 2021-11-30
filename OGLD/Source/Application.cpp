@@ -3,6 +3,7 @@
 //
 
 #include <stdexcept>
+#include <sstream>
 #include <iostream>
 #include "Application.h"
 #include "GLFW/glfw3.h"
@@ -14,20 +15,24 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 bool ogld::Application::MainLoop()
 {
-    glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
+    uint32_t clearFlags = gl::COLOR_BUFFER_BIT | (properties.renderer.depth ? gl::DEPTH_BUFFER_BIT : 0);
 
-    double lastFrame = 0.0f;
+    mFPS.prevTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(mWindow))
     {
         glfwPollEvents();
 
-        double currentFrame = glfwGetTime();
-        mAppDelta = currentFrame - lastFrame;
-        lastFrame = currentFrame;
+        mDeltaTime.currentFrame = glfwGetTime();
+        mDeltaTime.delta = mDeltaTime.currentFrame - mDeltaTime.lastFrame;
+        mDeltaTime.lastFrame = mDeltaTime.currentFrame;
 
-        gl::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+        mFPS.frames++;
+        if (mDeltaTime.currentFrame - mFPS.prevTime >= 1.0)
+            CalculateFPS();
+
+        gl::ClearColor(properties.bg[0], properties.bg[1], properties.bg[2], properties.bg[3]);
+        gl::Clear(clearFlags);
 
         if (!AppUpdate()) return false;
 
@@ -45,12 +50,15 @@ ogld::Application::~Application()
 
 void ogld::Application::Run()
 {
+    if (!AppPreInit())
+        std::runtime_error("OGLD: Failed to call AppPreInit function! Please, check your code for errors!");
+
     glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    mWindow = glfwCreateWindow(properties.width, properties.height, properties.title, nullptr, nullptr);
+    mWindow = glfwCreateWindow(properties.width, properties.height, std::string(properties.title + std::string(" | FPS: 0")).c_str(), nullptr, nullptr);
 
     if (mWindow == nullptr)
     {
@@ -60,13 +68,39 @@ void ogld::Application::Run()
     }
 
     glfwMakeContextCurrent(mWindow);
-    glfwSwapInterval(1);
+    glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
 
-    gl::Enable(gl::DEPTH_TEST);
+    if (properties.vsync)
+        glfwSwapInterval(1);
+
+    if (properties.renderer.depth)
+        gl::Enable(gl::DEPTH_TEST);
 
     if (!AppInit())
         throw std::runtime_error("OGLD: Failed to call AppInit function! Please, check your code for errors!");
 
+    GLint GLVerMajor, GLVerMinor;
+    gl::GetIntegerv(gl::MAJOR_VERSION, &GLVerMajor);
+    gl::GetIntegerv(gl::MINOR_VERSION, &GLVerMinor);
+
+    std::cout << "GPU: " << gl::GetString(gl::RENDERER) << '\n';
+    std::cout << "OpenGL Version: " << GLVerMajor << "." << GLVerMinor << '\n';
+    std::cout << "GLSL Version: " << gl::GetString(gl::SHADING_LANGUAGE_VERSION) << '\n';
+
     if (!MainLoop())
         throw std::runtime_error("OGLD: Failed to call AppUpdate function! Please, check your code for errors!");
+}
+
+void ogld::Application::CalculateFPS()
+{
+    mFPS.fps = double(mFPS.frames) / mDeltaTime.delta;
+
+    std::ostringstream oss;
+    oss << properties.title << " | FPS: " << mFPS.fps;
+
+    glfwSetWindowTitle(mWindow, oss.str().c_str());
+
+    mFPS.frames = 0;
+
+    mFPS.prevTime = mDeltaTime.currentFrame;
 }

@@ -17,6 +17,10 @@ add_library(OGLD_LIBRARY STATIC ${OGLD_SOURCE_FILES})
 add_subdirectory(../ThirdParty/glfw ThirdParty/glfw)
 add_subdirectory(../ThirdParty/glm ThirdParty/glm)
 
+target_include_directories(OGLD_LIBRARY PUBLIC
+        ../ThirdParty/
+        )
+
 target_link_libraries(OGLD_LIBRARY
         glfw
         glm

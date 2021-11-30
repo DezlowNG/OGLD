@@ -5,7 +5,7 @@
 #ifndef OGLD_MAIN_VERTEXARRAY_H
 #define OGLD_MAIN_VERTEXARRAY_H
 
-#include "../OpenGL/gl_core_4_5.hpp"
+#include "OpenGL/gl_core_4_5.hpp"
 
 namespace ogld
 {

@@ -150,6 +150,7 @@ void CheckCompileErrors(const uint32_t& shader, const char* type)
     }
 }
 
+#ifndef _MSC_VER
 template<>
 void ogld::Shader::SetUniform<float>(const char* uniformName, const float& value)
 {
@@ -167,3 +168,4 @@ void ogld::Shader::SetUniform<glm::mat4>(const char* uniformName, const glm::mat
 {
     gl::UniformMatrix4fv(GetUniformLocation(uniformName), 1, gl::FALSE_, &value[0][0]);
 }
+#endif

@@ -4,18 +4,26 @@
 
 #include <memory>
 #include <iostream>
+
 #include "Application.h"
 #include "Shader.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 
-#include "glm/vec3.hpp"
 #include "glm/gtx/vector_angle.hpp"
 #include "glm/mat4x4.hpp"
 
 class DemoApplication : public ogld::Application
 {
 protected:
+    bool AppPreInit() override
+    {
+        properties.vsync = false;
+        properties.title = "OGLD: Main Demo";
+
+        return true;
+    }
+
     bool AppInit() override
     {
         mShader.LoadFromFile("Shaders/vertex.glsl", "Shaders/fragment.glsl");
@@ -33,24 +41,21 @@ protected:
         mVBO.UnBind();
         mVAO.UnBind();
 
-        gl::DepthFunc(gl::ALWAYS);
-        gl::Enable(gl::BLEND);
-        gl::BlendFunc(gl::SRC_ALPHA, gl::ONE_MINUS_SRC_ALPHA);
-
         return true;
     }
 
     bool AppUpdate() override
     {
-        double deltaTime = GetDelta();
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)exp(atan(acos(sin(glfwGetTime())))), glm::vec3(1.0f, 0.0f, 0.0f));
+        double deltaTime = GetDelta();
+
+        model = glm::rotate(model, (float)sin(glfwGetTime()), glm::vec3(1.0f, 0.0f, 0.0f));
 
         mShader.Use();
         mShader.SetUniform<glm::mat4>("MVP", model);
         mShader.SetUniform<glm::vec3>("color", glm::vec3(glm::max(glm::sin(0.75f * glfwGetTime()), 0.35),
-                                                                             glm::max(glm::sin(0.75f * glfwGetTime()), 0.2),
-                                                                             glm::max(glm::sin(0.59f * glfwGetTime()), 0.25)));
+                                                         glm::max(glm::sin(0.75f * glfwGetTime()), 0.2),
+                                                         glm::max(glm::cos(glm::sin(0.59f * glfwGetTime())), 0.25)));
 
         mVAO.Bind();
         gl::DrawArrays(gl::TRIANGLES, 0, 3);
