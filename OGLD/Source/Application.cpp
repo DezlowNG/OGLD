@@ -93,14 +93,11 @@ void ogld::Application::Run()
 
 void ogld::Application::CalculateFPS()
 {
-    mFPS.fps = double(mFPS.frames) / mDeltaTime.delta;
-
     std::ostringstream oss;
-    oss << properties.title << " | FPS: " << mFPS.fps;
+    oss << properties.title << " | FPS: " << mFPS.frames;
 
     glfwSetWindowTitle(mWindow, oss.str().c_str());
 
     mFPS.frames = 0;
-
     mFPS.prevTime = mDeltaTime.currentFrame;
 }
