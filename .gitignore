@@ -3,7 +3,13 @@
 .git/
 *.vcxproj.user
 bin/
+
 Demos/*/cmake-build-debug/
 Demos/*/cmake-build-release/
+Demos/*/out/
 Demos/*/*.idea/
+
+OGLD/out/
+OGLD/cmake-build-debug/
+OGLD/cmake-build-release/
 OGLD/.idea/
