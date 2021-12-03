@@ -39,6 +39,10 @@ namespace ogld
             double fps = 0.0;
             double prevTime = 0.0;
             uint32_t frames = 0;
+
+            // for calc average fps
+            uint64_t totalFPS = 0;
+            uint32_t totalPrintFPS = 0;
         };
     public:
         ApplicationProperties properties{};

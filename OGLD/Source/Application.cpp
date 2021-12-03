@@ -89,10 +89,15 @@ void ogld::Application::Run()
 
     if (!MainLoop())
         throw std::runtime_error("OGLD: Failed to call AppUpdate function! Please, check your code for errors!");
+
+    std::cout << "\nAverage FPS: " << mFPS.totalFPS / mFPS.totalPrintFPS << '\n';
 }
 
 void ogld::Application::CalculateFPS()
 {
+    mFPS.totalPrintFPS++;
+    mFPS.totalFPS += mFPS.frames;
+
     std::ostringstream oss;
     oss << properties.title << " | FPS: " << mFPS.frames;
 
