@@ -2,10 +2,12 @@
 // Created by dezlow on 24.11.2021.
 //
 
-#include "Shader.h"
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <iostream>
+
+#include "Shader.h"
 #include "glm/vec3.hpp"
 #include "glm/mat4x4.hpp"
 
@@ -38,32 +40,46 @@ void ogld::Shader::LoadFromSource(const char* vertexSource, const char* fragment
     gl::DeleteShader(fragment);
 }
 
-void ogld::Shader::LoadFromFile(const char* vertexPath, const char* fragmentPath)
+enum ShaderType
+{
+    VERTEX,
+    FRAGMENT,
+};
+
+void ogld::Shader::LoadFromFile(const char* shaderPath)
 {
     std::string vertexShaderSrc;
     std::string fragmentShaderSrc;
 
-    std::ifstream vertexShaderFile;
-    std::ifstream fragmentShaderFile;
-
-    vertexShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    fragmentShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
+    std::ifstream shaderFile;
+    
     try
     {
-        vertexShaderFile.open(vertexPath);
-        fragmentShaderFile.open(fragmentPath);
+        shaderFile.open(shaderPath);
 
-        std::stringstream vShaderStream, fShaderStream;
+        std::stringstream ss[2];
+        std::string line;
+        ShaderType type{};
 
-        vShaderStream << vertexShaderFile.rdbuf();
-        fShaderStream << fragmentShaderFile.rdbuf();
+        while (std::getline(shaderFile, line))
+        {
+            if (line.find("// TYPE=") != std::string::npos)
+            {
+                if (line.find("VERTEX") != std::string::npos)
+                    type = ShaderType::VERTEX;
+                else if (line.find("FRAGMENT") != std::string::npos)
+                    type = ShaderType::FRAGMENT;
+            }
+            else
+            {
+                ss[(int)type] << line << '\n';
+            }
+        }
 
-        vertexShaderFile.close();
-        fragmentShaderFile.close();
+        shaderFile.close();
 
-        vertexShaderSrc = vShaderStream.str();
-        fragmentShaderSrc = fShaderStream.str();
+        vertexShaderSrc = ss[(int)ShaderType::VERTEX].str();
+        fragmentShaderSrc = ss[(int)ShaderType::FRAGMENT].str();
     }
     catch (const std::exception& ex)
     {

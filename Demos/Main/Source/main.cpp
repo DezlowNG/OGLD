@@ -26,7 +26,7 @@ protected:
 
     bool AppInit() override
     {
-        mShader.LoadFromFile("Shaders/vertex.glsl", "Shaders/fragment.glsl");
+        mShader.LoadFromFile("Shaders/shader.glsl");
 
         float vertices[] = {
                 -0.5f, -0.5f, 0.0f,
@@ -49,7 +49,7 @@ protected:
         glm::mat4 model = glm::mat4(1.0f);
         double deltaTime = GetDelta();
 
-        model = glm::rotate(model, (float)sin(glfwGetTime()), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, (float)(glfwGetTime()), glm::vec3(1.0f, 0.0f, 0.0f));
 
         mShader.Use();
         mShader.SetUniform<glm::mat4>("MVP", model);
@@ -63,9 +63,9 @@ protected:
         return true;
     }
 private:
-    ogld::Shader mShader;
-    ogld::VertexArray mVAO;
-    ogld::VertexBuffer mVBO;
+    ogld::Shader mShader{};
+    ogld::VertexArray mVAO{};
+    ogld::VertexBuffer mVBO{};
 };
 
 int main()

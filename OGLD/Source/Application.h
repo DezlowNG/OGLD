@@ -53,7 +53,7 @@ namespace ogld
 
         double GetDelta() const { return mDeltaTime.delta; }
     private:
-        GLFWwindow* mWindow;
+        GLFWwindow* mWindow{};
         DTSturct mDeltaTime;
         FPSStruct mFPS;
 

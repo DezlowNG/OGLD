@@ -32,7 +32,7 @@ namespace ogld
         static void PushLayout(uint32_t id, uint32_t size, uint32_t stride, uint32_t pointer) {}
 #ifdef _MSC_VER
         template<>
-        void PushLayout<float>(uint32_t id, uint32_t size, uint32_t stride, uint32_t pointer)
+        static void PushLayout<float>(uint32_t id, uint32_t size, uint32_t stride, uint32_t pointer)
         {
             gl::EnableVertexAttribArray(id);
             gl::VertexAttribPointer(id, (int) size, gl::FLOAT, gl::FALSE_, stride * sizeof(float), (void*)pointer);

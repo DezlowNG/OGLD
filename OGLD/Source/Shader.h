@@ -24,7 +24,7 @@ namespace ogld
 
         inline void Use() const { gl::UseProgram(mID); }
 
-        void LoadFromFile(const char* vertexPath, const char* fragmentPath);
+        void LoadFromFile(const char* shaderPath);
 
         void LoadFromSource(const char* vertexSource, const char* fragmentSource);
 
@@ -51,7 +51,7 @@ namespace ogld
 #endif
     private:
         mutable std::unordered_map<const char*, GLint> mUniformLocationCache;
-        uint32_t mID;
+        uint32_t mID{};
 
         GLint GetUniformLocation(const char* name) const;
     };

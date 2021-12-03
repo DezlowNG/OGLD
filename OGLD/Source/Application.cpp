@@ -51,7 +51,7 @@ ogld::Application::~Application()
 void ogld::Application::Run()
 {
     if (!AppPreInit())
-        std::runtime_error("OGLD: Failed to call AppPreInit function! Please, check your code for errors!");
+        throw std::runtime_error("OGLD: Failed to call AppPreInit function! Please, check your code for errors!");
 
     glfwInit();
 
