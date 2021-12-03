@@ -52,10 +52,10 @@ protected:
         model = glm::rotate(model, (float)(glfwGetTime()), glm::vec3(1.0f, 0.0f, 0.0f));
 
         mShader.Use();
-        mShader.SetUniform<glm::mat4>("MVP", model);
-        mShader.SetUniform<glm::vec3>("color", glm::vec3(glm::max(glm::sin(0.75f * glfwGetTime()), 0.35),
-                                                         glm::max(glm::sin(0.75f * glfwGetTime()), 0.2),
-                                                         glm::max(glm::cos(glm::sin(0.59f * glfwGetTime())), 0.25)));
+        mShader.SetUniform<mat4cr>("MVP", model);
+        mShader.SetUniform<vec3cr>("color", glm::vec3(glm::max(glm::sin(0.75f * glfwGetTime()), 0.35),
+                                                      glm::max(glm::sin(0.75f * glfwGetTime()), 0.2),
+                                                      glm::max(glm::cos(glm::sin(0.59f * glfwGetTime())), 0.25)));
 
         mVAO.Bind();
         gl::DrawArrays(gl::TRIANGLES, 0, 3);

@@ -16,30 +16,6 @@ uint32_t CreateFragmentShader(const char* shaderSrc);
 uint32_t CreateProgram(const uint32_t& vertexShaderID, const uint32_t& fragmentShaderID);
 void CheckCompileErrors(const uint32_t& shader, const char* type);
 
-void ogld::Shader::LoadFromSource(const char* vertexSource, const char* fragmentSource)
-{
-    unsigned int vertex, fragment;
-
-    vertex = gl::CreateShader(gl::VERTEX_SHADER);
-    gl::ShaderSource(vertex, 1, &vertexSource, nullptr);
-    gl::CompileShader(vertex);
-    CheckCompileErrors(vertex, "VERTEX");
-
-    fragment = gl::CreateShader(gl::FRAGMENT_SHADER);
-    gl::ShaderSource(fragment, 1, &fragmentSource, nullptr);
-    gl::CompileShader(fragment);
-    CheckCompileErrors(fragment, "FRAGMENT");
-
-    mID = gl::CreateProgram();
-    gl::AttachShader(mID, vertex);
-    gl::AttachShader(mID, fragment);
-    gl::LinkProgram(mID);
-    CheckCompileErrors(mID, "PROGRAM");
-
-    gl::DeleteShader(vertex);
-    gl::DeleteShader(fragment);
-}
-
 enum ShaderType
 {
     VERTEX,
@@ -168,20 +144,20 @@ void CheckCompileErrors(const uint32_t& shader, const char* type)
 
 #ifndef _MSC_VER
 template<>
-void ogld::Shader::SetUniform<float>(const char* uniformName, const float& value)
+void ogld::Shader::SetUniform<float>(const char* uname, float uvalue)
 {
-    gl::Uniform1f(GetUniformLocation(uniformName), value);
+    gl::Uniform1f(GetUniformLocation(uname), uvalue);
 }
 
 template<>
-void ogld::Shader::SetUniform<glm::vec3>(const char* uniformName, const glm::vec3& value)
+void ogld::Shader::SetUniform<vec3cr>(const char* uname, vec3cr uvalue)
 {
-    gl::Uniform3fv(GetUniformLocation(uniformName), 1, &value[0]);
+    gl::Uniform3fv(GetUniformLocation(uname), 1, &uvalue[0]);
 }
 
 template<>
-void ogld::Shader::SetUniform<glm::mat4>(const char* uniformName, const glm::mat4& value)
+void ogld::Shader::SetUniform<mat4cr>(const char* uname, mat4cr uvalue)
 {
-    gl::UniformMatrix4fv(GetUniformLocation(uniformName), 1, gl::FALSE_, &value[0][0]);
+    gl::UniformMatrix4fv(GetUniformLocation(uname), 1, gl::FALSE_, &uvalue[0][0]);
 }
 #endif
