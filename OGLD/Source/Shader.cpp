@@ -141,23 +141,3 @@ void CheckCompileErrors(const uint32_t& shader, const char* type)
         }
     }
 }
-
-#ifndef _MSC_VER
-template<>
-void ogld::Shader::SetUniform<float>(const char* uname, float uvalue)
-{
-    gl::Uniform1f(GetUniformLocation(uname), uvalue);
-}
-
-template<>
-void ogld::Shader::SetUniform<vec3cr>(const char* uname, vec3cr uvalue)
-{
-    gl::Uniform3fv(GetUniformLocation(uname), 1, &uvalue[0]);
-}
-
-template<>
-void ogld::Shader::SetUniform<mat4cr>(const char* uname, mat4cr uvalue)
-{
-    gl::UniformMatrix4fv(GetUniformLocation(uname), 1, gl::FALSE_, &uvalue[0][0]);
-}
-#endif

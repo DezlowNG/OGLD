@@ -13,9 +13,6 @@
 #include "glm/mat4x4.hpp"
 #endif
 
-using vec3cr = const glm::vec3&;
-using mat4cr = const glm::mat4&;
-
 namespace ogld
 {
     class Shader
@@ -33,27 +30,20 @@ namespace ogld
 
         void LoadFromFile(const char* shaderPath);
 
-        template<class T>
-        inline void SetUniform(const char* uname, const T uvalue);
-#ifdef _MSC_VER
-		template<>
-        inline void SetUniform<float>(const char* uname, float uvalue)
+        inline void SetUniformFloat(const char* uname, float uvalue)
         {
             gl::Uniform1f(GetUniformLocation(uname), uvalue);
         }
 
-        template<>
-        inline void SetUniform(const char* uname, vec3cr uvalue)
+        inline void SetUniformVec3(const char* uname, const glm::vec3& uvalue)
         {
             gl::Uniform3fv(GetUniformLocation(uname), 1, &uvalue[0]);
         }
 
-        template<>
-        inline void SetUniform(const char* uname, mat4cr uvalue)
+        inline void SetUniformMat4(const char* uname, const glm::mat4& uvalue)
         {
             gl::UniformMatrix4fv(GetUniformLocation(uname), 1, gl::FALSE_, &uvalue[0][0]);
         }
-#endif
     private:
         mutable std::unordered_map<const char*, GLint> mUniformLocationCache;
         uint32_t mID{};

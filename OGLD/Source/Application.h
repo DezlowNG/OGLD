@@ -18,7 +18,7 @@ namespace ogld
             const char* title = "OGLD";
             uint16_t width = 1280;
             uint16_t height = 720;
-            float bg[4]{0.1f, 0.1f, 0.1f, 1.0f};
+            float bg[4]{ 0.1f, 0.1f, 0.1f, 1.0f };
             struct rendererProps
             {
                 bool depth = true;
@@ -45,15 +45,16 @@ namespace ogld
             uint32_t totalPrintFPS = 0;
         };
     public:
-        ApplicationProperties properties{};
         Application() = default;
         ~Application();
 
         void Run();
     protected:
-        virtual bool AppPreInit() = 0;
-        virtual bool AppInit() = 0;
-        virtual bool AppUpdate() = 0;
+		virtual bool AppPreInit() = 0;
+		virtual bool AppInit() = 0;
+		virtual bool AppUpdate() = 0;
+
+        static ApplicationProperties properties;
 
         double GetDelta() const { return mDeltaTime.delta; }
     private:
@@ -65,6 +66,8 @@ namespace ogld
 
         bool MainLoop();
     };
+
+    std::shared_ptr<Application> CreateApplication();
 }
 
 

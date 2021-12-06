@@ -11,7 +11,8 @@
 #include "VertexBuffer.h"
 
 #include "glm/gtx/vector_angle.hpp"
-#include "glm/mat4x4.hpp"
+
+#include "EntryPoint.h"
 
 class DemoApplication : public ogld::Application
 {
@@ -28,13 +29,50 @@ protected:
     {
         mShader.LoadFromFile("Shaders/shader.glsl");
 
-        float vertices[] = {
-                -0.5f, -0.5f, 0.0f,
-                 0.5f, -0.5f, 0.0f,
-                 0.0f,  0.5f, 0.0f
-        };
+		float vertices[] = {
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
 
-        mVAO.Init();
+			-0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+
+			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f, -0.5f,
+			-0.5f, -0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+
+			-0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f, -0.5f,
+			 0.5f, -0.5f,  0.5f,
+			 0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f,  0.5f,
+			-0.5f, -0.5f, -0.5f,
+
+			-0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f, -0.5f,
+			 0.5f,  0.5f,  0.5f,
+			 0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f,  0.5f,
+			-0.5f,  0.5f, -0.5f
+		};
+
         mVAO.Bind();
         mVBO.Create(sizeof(vertices), vertices);
         ogld::VertexBuffer::PushLayout<float>(0, 3, 3, 0);
@@ -46,19 +84,26 @@ protected:
 
     bool AppUpdate() override
     {
-        glm::mat4 model = glm::mat4(1.0f);
         double deltaTime = GetDelta();
 
-        model = glm::rotate(model, (float)(glfwGetTime()), glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 view = glm::mat4(1.0f);
+		glm::mat4 projection = glm::mat4(1.0f);
+
+		model = glm::rotate(model, cos((float)glfwGetTime() * glm::radians(50.0f)), glm::vec3(0.5f, 1.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+		projection = glm::perspective(glm::radians(90.0f), (float)properties.width / (float)properties.height, 0.1f, 100.0f);
+
+		glm::mat4 MVP = projection * view * model;
 
         mShader.Use();
-        mShader.SetUniform<mat4cr>("MVP", model);
-        mShader.SetUniform<vec3cr>("color", glm::vec3(glm::max(glm::sin(0.75f * glfwGetTime()), 0.35),
-                                                      glm::max(glm::sin(0.75f * glfwGetTime()), 0.2),
-                                                      glm::max(glm::cos(glm::sin(0.59f * glfwGetTime())), 0.25)));
+        mShader.SetUniformMat4("MVP", MVP);
+		mShader.SetUniformVec3("color", glm::vec3(glm::max(glm::sin(0.75f * glfwGetTime()), 0.35),
+													  glm::max(glm::sin(0.75f * glfwGetTime()), 0.2),
+													  glm::max(glm::cos(glm::sin(0.59f * glfwGetTime())), 0.25)));
 
-        mVAO.Bind();
-        gl::DrawArrays(gl::TRIANGLES, 0, 3);
+		mVAO.Bind();
+        gl::DrawArrays(gl::TRIANGLES, 0, 36);
 
         return true;
     }
@@ -68,15 +113,7 @@ private:
     ogld::VertexBuffer mVBO{};
 };
 
-int main()
+std::shared_ptr<ogld::Application> ogld::CreateApplication()
 {
-    auto demo_app = std::make_shared<DemoApplication>();
-
-    try {
-        demo_app->Run();
-    } catch (std::exception& ex) {
-        std::cout << ex.what() << '\n';
-    }
-
-    return 0;
+	return std::make_shared<DemoApplication>();
 }
