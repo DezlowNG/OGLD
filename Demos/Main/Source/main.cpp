@@ -87,23 +87,23 @@ protected:
     {
         double deltaTime = GetDelta();
 
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 projection = glm::mat4(1.0f);
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
 
-		model = glm::rotate(model, cos((float)glfwGetTime() * glm::radians(50.0f)), glm::vec3(0.5f, 1.0f, 0.0f));
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-		projection = glm::perspective(glm::radians(90.0f), (float)properties.width / (float)properties.height, 0.1f, 100.0f);
+        model = glm::rotate(model, cos((float)glfwGetTime() * glm::radians(50.0f)), glm::vec3(0.5f, 1.0f, 0.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        projection = glm::perspective(glm::radians(90.0f), (float)properties.width / (float)properties.height, 0.1f, 100.0f);
 
-		glm::mat4 MVP = projection * view * model;
+        glm::mat4 MVP = projection * view * model;
 
         mShader.Use();
         mShader.SetUniformMat4("MVP", MVP);
-		mShader.SetUniformVec3("color", glm::vec3(glm::max(glm::sin(0.75f * glfwGetTime()), 0.35),
-													  glm::max(glm::sin(0.75f * glfwGetTime()), 0.2),
-													  glm::max(glm::cos(glm::sin(0.59f * glfwGetTime())), 0.25)));
+        mShader.SetUniformVec3("color", glm::vec3(glm::max(glm::sin(0.75f * glfwGetTime()), 0.35),
+                                                  glm::max(glm::sin(0.75f * glfwGetTime()), 0.2),
+                                                  glm::max(glm::cos(glm::sin(0.59f * glfwGetTime())), 0.25)));
 
-		mVAO.Bind();
+        mVAO.Bind();
         gl::DrawArrays(gl::TRIANGLES, 0, 36);
 
         return true;
