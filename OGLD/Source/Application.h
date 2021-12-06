@@ -50,9 +50,9 @@ namespace ogld
 
         void Run();
     protected:
-		virtual bool AppPreInit() = 0;
-		virtual bool AppInit() = 0;
-		virtual bool AppUpdate() = 0;
+        virtual bool AppPreInit() = 0;
+        virtual bool AppInit() = 0;
+        virtual bool AppUpdate() = 0;
 
         static ApplicationProperties properties;
 
