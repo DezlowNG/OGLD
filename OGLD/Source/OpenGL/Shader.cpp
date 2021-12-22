@@ -4,7 +4,7 @@
 
 #include <fstream>
 #include <sstream>
-#include <string>
+#include <cstring>
 #include <iostream>
 
 #include "Shader.h"
@@ -120,7 +120,12 @@ void CheckCompileErrors(const uint32_t& shader, const char* type)
     int succes;
     char infoLog[512];
 
-    if (type != "PROGRAM")
+    /*
+     * DONT WRITE:
+     * if (type == "PROGRAM")
+     * because result will ALWAYS TRUE
+     */
+    if (std::strcmp(type, "PROGRAM") != 0)
     {
         gl::GetShaderiv(shader, gl::COMPILE_STATUS, &succes);
 

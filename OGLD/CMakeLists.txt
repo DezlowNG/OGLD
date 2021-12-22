@@ -8,7 +8,12 @@ find_package(OpenGL REQUIRED)
 include_directories(/ThirdParty)
 
 file(GLOB OGLD_SOURCE_FILES
-        "Source/*.cpp"
+        "Source/Components/*/*.cpp"
+        "Source/Components/*/*.h"
+        "Source/Core/*.cpp"
+        "Source/Core/*.h"
+        "Source/OpenGL/*.cpp"
+        "Source/OpenGL/*.h"
         "../ThirdParty/OpenGL/gl_core_4_5.cpp"
         )
 

@@ -1,13 +1,18 @@
 //
-// Created by dezlow on 24.11.2021.
+// Created by Dezlow on 24.11.2021.
+// Copyright (c) 2021 Oneiro Games. All rights reserved.
 //
 
-#ifndef OGLD_MAIN_APPLICATION_H
-#define OGLD_MAIN_APPLICATION_H
+#pragma once
+
+#ifndef OGLD_LIBRARY_APPLICATION_H
+#define OGLD_LIBRARY_APPLICATION_H
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
 #include "OpenGL/gl_core_4_5.hpp"
+
+#include "Components/Camera/CameraComponent.h"
 
 namespace ogld
 {
@@ -19,11 +24,6 @@ namespace ogld
             uint16_t width = 1280;
             uint16_t height = 720;
             float bg[4]{ 0.1f, 0.1f, 0.1f, 1.0f };
-            struct rendererProps
-            {
-                bool depth = true;
-            };
-            rendererProps renderer;
             bool vsync = true;
         };
 
@@ -39,10 +39,6 @@ namespace ogld
             double fps = 0.0;
             double prevTime = 0.0;
             uint32_t frames = 0;
-
-            // for calc average fps
-            uint64_t totalFPS = 0;
-            uint32_t totalPrintFPS = 0;
         };
     public:
         Application() = default;
@@ -57,10 +53,17 @@ namespace ogld
         static ApplicationProperties properties;
 
         double GetDelta() const { return mDeltaTime.delta; }
+        GLFWwindow* GetWindow() { return mWindow; }
+        const glm::mat4& GetCameraView() { return mAppCamera.GetViewMatrix(); }
     private:
+        static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+        static void MouseCallback(GLFWwindow* window, double xpos, double ypos);
+
         GLFWwindow* mWindow{};
         DTSturct mDeltaTime;
         FPSStruct mFPS;
+
+        Camera mAppCamera;
 
         void CalculateFPS();
 
@@ -71,4 +74,4 @@ namespace ogld
 }
 
 
-#endif //OGLD_MAIN_APPLICATION_H
+#endif //OGLD_LIBRARY_APPLICATION_H
