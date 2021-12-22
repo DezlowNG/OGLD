@@ -1,6 +1,4 @@
-.vs/
-.idea/
-.git/
+.*/
 *.vcxproj.user
 bin/
 
