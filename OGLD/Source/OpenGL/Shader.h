@@ -31,18 +31,15 @@ namespace ogld
 
         void LoadFromFile(const char* shaderPath);
 
-        inline void SetUniformFloat(const char* uname, float uvalue)
-        {
+        inline void SetUniform(const char* uname, float uvalue) {
             gl::Uniform1f(GetUniformLocation(uname), uvalue);
         }
 
-        inline void SetUniformVec3(const char* uname, const glm::vec3& uvalue)
-        {
+        inline void SetUniform(const char* uname, const glm::vec3& uvalue) {
             gl::Uniform3fv(GetUniformLocation(uname), 1, &uvalue[0]);
         }
 
-        inline void SetUniformMat4(const char* uname, const glm::mat4& uvalue)
-        {
+        inline void SetUniform(const char* uname, const glm::mat4& uvalue) {
             gl::UniformMatrix4fv(GetUniformLocation(uname), 1, gl::FALSE_, &uvalue[0][0]);
         }
     private:
