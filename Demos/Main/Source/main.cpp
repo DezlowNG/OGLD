@@ -90,16 +90,20 @@ protected:
     {
         ogld::ErrorHandler::GLClearError();
 
-        glm::mat4 model = glm::rotate(glm::mat4(1.0f), cos((float)glfwGetTime() * glm::radians(50.0f)), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 model = glm::rotate(glm::mat4(1.0f),
+                                      cos((float)glfwGetTime() * glm::radians(50.0f)),
+                                      glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 view = GetCameraView();
-        glm::mat4 projection = glm::perspective(glm::radians(90.0f), (float)properties.width / (float)properties.height, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(90.0f),
+                                                (float)properties.width / (float)properties.height,
+                                                0.1f, 100.0f);
 
         glm::mat4 MVP = projection * view * model;
 
         mTexture.Bind();
 
         mShader.Use();
-        mShader.SetUniformMat4("MVP", MVP);
+        mShader.SetUniform("MVP", MVP);
 
         mVAO.Bind();
         gl::DrawArrays(gl::TRIANGLES, 0, 36);
@@ -108,6 +112,7 @@ protected:
 
         return true;
     }
+
 private:
     ogld::Shader mShader{};
     ogld::VertexArray mVAO{};
