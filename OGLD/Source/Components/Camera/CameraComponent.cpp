@@ -14,7 +14,7 @@ ogld::Camera::Camera()
     mPitch = 0.0f;
     mFront = glm::vec3(0.0f, 0.0f, -1.0f);
     mMovementSpeed = 2.5f;
-    mMouseSensitivity = 0.06f;
+    mMouseSensitivity = 0.12f;
 
     updateCameraVectors();
 }
@@ -44,6 +44,9 @@ void ogld::Camera::mouse_callback(float xpos, float ypos)
 
     float xoffset = xpos - mLastX;
     float yoffset = mLastY - ypos;
+
+    mLastX = xpos;
+    mLastY = ypos;
 
     xoffset *= mMouseSensitivity;
     yoffset *= mMouseSensitivity;
