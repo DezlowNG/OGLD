@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
-project(OGLD_LIBRARY)
+project(OGLD)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenGL REQUIRED)
 
@@ -9,11 +9,11 @@ include_directories(/ThirdParty)
 
 file(GLOB OGLD_SOURCE_FILES
         "Source/Components/*/*.cpp"
-        "Source/Components/*/*.h"
+        "Source/Components/*/*.hpp"
         "Source/Core/*.cpp"
-        "Source/Core/*.h"
+        "Source/Core/*.hpp"
         "Source/OpenGL/*.cpp"
-        "Source/OpenGL/*.h"
+        "Source/OpenGL/*.hpp"
         "../ThirdParty/OpenGL/gl_core_4_5.cpp"
         )
 

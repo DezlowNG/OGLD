@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(OGLD_DEMO_MAIN)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_BINARY_DIR "${PROJECT_SOURCE_DIR}../../../bin/${CMAKE_SYSTEM_NAME}/${CMAKE_PROJECT_NAME}/${CMAKE_BUILD_TYPE}-${CMAKE_SYSTEM_PROCESSOR}")
 
@@ -23,7 +23,7 @@ endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 include_directories(../../OGLD/Source/)
 
 file(GLOB SOURCE_FILES
-        "Source/*.h"
+        "Source/*.hpp"
         "Source/*.cpp"
         )
 
@@ -32,7 +32,6 @@ add_executable(OGLD_DEMO_MAIN
         )
 
 add_subdirectory(../../OGLD/ ${CMAKE_BINARY_DIR})
-
 target_link_libraries(${CMAKE_PROJECT_NAME}
         OGLD_LIBRARY
         )
