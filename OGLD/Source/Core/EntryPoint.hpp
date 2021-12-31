@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifndef OGLD_LIBRARY_ENTRYPOINT_H
-#define OGLD_LIBRARY_ENTRYPOINT_H
+#ifndef OGLD_ENTRYPOINT_H
+#define OGLD_ENTRYPOINT_H
 
 #include "Application.hpp"
 #include <iostream>
@@ -24,4 +24,4 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-#endif //OGLD_LIBRARY_ENTRYPOINT_H
+#endif //OGLD_ENTRYPOINT_H

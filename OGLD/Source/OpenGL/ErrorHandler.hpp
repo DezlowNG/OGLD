@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifndef OGLD_LIBRARY_ERRORHANDLER_H
-#define OGLD_LIBRARY_ERRORHANDLER_H
+#ifndef OGLD_ERRORHANDLER_H
+#define OGLD_ERRORHANDLER_H
 
 #include "OpenGL/gl_core_4_5.hpp"
 
@@ -34,4 +34,4 @@ namespace ogld
 }
 
 
-#endif //OGLD_LIBRARY_ERRORHANDLER_H
+#endif //OGLD_ERRORHANDLER_H

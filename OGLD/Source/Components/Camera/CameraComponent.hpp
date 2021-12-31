@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifndef OGLD_LIBRARY_CAMERA_H
-#define OGLD_LIBRARY_CAMERA_H
+#ifndef OGLD_CAMERA_H
+#define OGLD_CAMERA_H
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -43,4 +43,4 @@ namespace ogld
         void updateCameraVectors();
     };
 }
-#endif //OGLD_LIBRARY_CAMERA_H
+#endif //OGLD_CAMERA_H

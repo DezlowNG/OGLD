@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifndef OGLD_LIBRARY_TEXTURE_H
-#define OGLD_LIBRARY_TEXTURE_H
+#ifndef OGLD_TEXTURE_H
+#define OGLD_TEXTURE_H
 
 #include <string>
 
@@ -28,4 +28,4 @@ namespace ogld
         uint32_t mTextureID;
     };
 }
-#endif //OGLD_LIBRARY_TEXTURE_H
+#endif //OGLD_TEXTURE_H

@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifndef OGLD_LIBRARY_APPLICATION_H
-#define OGLD_LIBRARY_APPLICATION_H
+#ifndef OGLD_APPLICATION_H
+#define OGLD_APPLICATION_H
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
@@ -74,4 +74,4 @@ namespace ogld
 }
 
 
-#endif //OGLD_LIBRARY_APPLICATION_H
+#endif //OGLD_APPLICATION_H

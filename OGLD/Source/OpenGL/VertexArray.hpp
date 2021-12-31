@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifndef OGLD_LIBRARY_VERTEXARRAY_H
-#define OGLD_LIBRARY_VERTEXARRAY_H
+#ifndef OGLD_VERTEXARRAY_H
+#define OGLD_VERTEXARRAY_H
 
 #include "OpenGL/gl_core_4_5.hpp"
 
@@ -31,4 +31,4 @@ namespace ogld
 }
 
 
-#endif //OGLD_LIBRARY_VERTEXARRAY_H
+#endif //OGLD_VERTEXARRAY_H

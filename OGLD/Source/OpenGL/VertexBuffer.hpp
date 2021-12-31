@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifndef OGLD_LIBRARY_VERTEXBUFFER_H
-#define OGLD_LIBRARY_VERTEXBUFFER_H
+#ifndef OGLD_VERTEXBUFFER_H
+#define OGLD_VERTEXBUFFER_H
 
 #include <cstdint>
 #include "OpenGL/gl_core_4_5.hpp"
@@ -53,4 +53,4 @@ namespace ogld
     }
 #endif
 }
-#endif //OGLD_LIBRARY_VERTEXBUFFER_H
+#endif //OGLD_VERTEXBUFFER_H
