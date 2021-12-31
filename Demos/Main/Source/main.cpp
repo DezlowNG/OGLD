@@ -1,25 +1,25 @@
 //
-// Created by dezlow on 21.11.2021.
+// Created by Dezlow on 21.11.2021.
+// Copyright (c) 2021 Oneiro Games. All rights reserved.
 //
 
-#include <memory>
+#define OGLD_INCLUDE_CORE
+//If u want debug project then uncomment next lines:
+//#define OGLD_DEBUG
+//#define OGLD_TRACK_MEMORY
+#include "OGLD.hpp"
 
-#include "glm/gtx/vector_angle.hpp"
-
-#include "Core/Application.hpp"
-#include "Core/EntryPoint.hpp"
 #include "OpenGL/Shader.hpp"
+#include "OpenGL/Texture.hpp"
 #include "OpenGL/VertexArray.hpp"
 #include "OpenGL/VertexBuffer.hpp"
-#include "OpenGL/Texture.hpp"
-#include "OpenGL/ErrorHandler.hpp"
 
 class DemoApplication : public ogld::Application
 {
 protected:
     bool AppPreInit() override
     {
-        properties.vsync = false;
+        properties.vsync = true;
         properties.title = "OGLD: Main Demo";
 
         return true;
@@ -88,8 +88,9 @@ protected:
 
     bool AppUpdate() override
     {
+#ifdef OGLD_DEBUG
         ogld::ErrorHandler::GLClearError();
-
+#endif
         glm::mat4 model = glm::rotate(glm::mat4(1.0f),
                                       cos((float)glfwGetTime() * glm::radians(50.0f)),
                                       glm::vec3(0.0f, 1.0f, 0.0f));
@@ -108,11 +109,24 @@ protected:
         mVAO.Bind();
         gl::DrawArrays(gl::TRIANGLES, 0, 36);
 
+#ifdef OGLD_DEBUG
         ASSERT(ogld::ErrorHandler::GLLogCall());
-
+#endif
         return true;
     }
 
+#ifdef OGLD_TRACK_MEMORY
+    bool AppClosed() override
+    {
+        std::cout << "Total alloc: " << allocMemory << '\n';
+        return true;
+    }
+#else
+    bool AppClosed() override
+    {
+        return true;
+    }
+#endif
 private:
     ogld::Shader mShader{};
     ogld::VertexArray mVAO{};

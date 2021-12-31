@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifndef OGLD_SHADER_H
-#define OGLD_SHADER_H
+#ifndef OGLD_SHADER_HPP
+#define OGLD_SHADER_HPP
 
 #include <unordered_map>
 #include "OpenGL/gl_core_4_5.hpp"
@@ -50,4 +50,4 @@ namespace ogld
     };
 }
 
-#endif //OGLD_SHADER_H
+#endif //OGLD_SHADER_HPP

@@ -14,6 +14,8 @@ file(GLOB OGLD_SOURCE_FILES
         "Source/Core/*.hpp"
         "Source/OpenGL/*.cpp"
         "Source/OpenGL/*.hpp"
+        "Source/*.cpp"
+        "Source/*.hpp"
         "../ThirdParty/OpenGL/gl_core_4_5.cpp"
         )
 

@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifndef OGLD_APPLICATION_H
-#define OGLD_APPLICATION_H
+#ifndef OGLD_APPLICATION_HPP
+#define OGLD_APPLICATION_HPP
 
 #define GLFW_INCLUDE_NONE
 #include "GLFW/glfw3.h"
@@ -49,6 +49,7 @@ namespace ogld
         virtual bool AppPreInit() = 0;
         virtual bool AppInit() = 0;
         virtual bool AppUpdate() = 0;
+        virtual bool AppClosed() = 0;
 
         static ApplicationProperties properties;
 
@@ -74,4 +75,4 @@ namespace ogld
 }
 
 
-#endif //OGLD_APPLICATION_H
+#endif //OGLD_APPLICATION_HPP

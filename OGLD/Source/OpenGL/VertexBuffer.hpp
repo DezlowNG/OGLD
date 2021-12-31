@@ -5,8 +5,8 @@
 
 #pragma once
 
-#ifndef OGLD_VERTEXBUFFER_H
-#define OGLD_VERTEXBUFFER_H
+#ifndef OGLD_VERTEXBUFFER_HPP
+#define OGLD_VERTEXBUFFER_HPP
 
 #include <cstdint>
 #include "OpenGL/gl_core_4_5.hpp"
@@ -33,24 +33,17 @@ namespace ogld
 
         template<class T>
         static void PushLayout(uint32_t id, uint32_t size, uint32_t stride, uint32_t pointer) {}
-#ifdef _MSC_VER
+
         template<>
         static void PushLayout<float>(uint32_t id, uint32_t size, uint32_t stride, uint32_t pointer)
         {
             gl::EnableVertexAttribArray(id);
-            gl::VertexAttribPointer(id, size, gl::FLOAT, gl::FALSE_, stride * sizeof(float), (void*)(pointer == 0 ? 0 : (pointer * sizeof(float))));
+            gl::VertexAttribPointer(id, size, gl::FLOAT, gl::FALSE_, stride * sizeof(float), (void*) (pointer == 0 ? 0 : (pointer * sizeof(float))));
         }
-#endif
+
     private:
         uint32_t mID;
     };
-#ifndef _MSC_VER
-    template<>
-    void VertexBuffer::PushLayout<float>(uint32_t id, uint32_t size, uint32_t stride, uint32_t pointer)
-    {
-        gl::EnableVertexAttribArray(id);
-        gl::VertexAttribPointer(id, (int) size, gl::FLOAT, gl::FALSE_, stride * sizeof(float), (void*)pointer);
-    }
-#endif
 }
+
 #endif //OGLD_VERTEXBUFFER_H
