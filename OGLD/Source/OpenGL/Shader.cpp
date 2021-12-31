@@ -7,7 +7,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "Shader.h"
+#include "Shader.hpp"
 #include "glm/vec3.hpp"
 #include "glm/mat4x4.hpp"
 

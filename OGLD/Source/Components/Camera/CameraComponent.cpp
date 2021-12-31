@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "CameraComponent.h"
+#include "CameraComponent.hpp"
 
 ogld::Camera::Camera()
 {

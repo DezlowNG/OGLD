@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
-#include "Application.h"
+#include "Application.hpp"
 
 ogld::Application::ApplicationProperties ogld::Application::properties{};
 

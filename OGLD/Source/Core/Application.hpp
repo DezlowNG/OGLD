@@ -12,7 +12,7 @@
 #include "GLFW/glfw3.h"
 #include "OpenGL/gl_core_4_5.hpp"
 
-#include "Components/Camera/CameraComponent.h"
+#include "Components/Camera/CameraComponent.hpp"
 
 namespace ogld
 {

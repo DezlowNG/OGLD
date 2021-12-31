@@ -6,13 +6,13 @@
 
 #include "glm/gtx/vector_angle.hpp"
 
-#include "Core/Application.h"
-#include "Core/EntryPoint.h"
-#include "OpenGL/Shader.h"
-#include "OpenGL/VertexArray.h"
-#include "OpenGL/VertexBuffer.h"
-#include "OpenGL/Texture.h"
-#include "OpenGL/ErrorHandler.h"
+#include "Core/Application.hpp"
+#include "Core/EntryPoint.hpp"
+#include "OpenGL/Shader.hpp"
+#include "OpenGL/VertexArray.hpp"
+#include "OpenGL/VertexBuffer.hpp"
+#include "OpenGL/Texture.hpp"
+#include "OpenGL/ErrorHandler.hpp"
 
 class DemoApplication : public ogld::Application
 {

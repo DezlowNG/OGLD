@@ -8,7 +8,7 @@
 #ifndef OGLD_LIBRARY_ENTRYPOINT_H
 #define OGLD_LIBRARY_ENTRYPOINT_H
 
-#include "Application.h"
+#include "Application.hpp"
 #include <iostream>
 
 int main(int argc, char** argv)
