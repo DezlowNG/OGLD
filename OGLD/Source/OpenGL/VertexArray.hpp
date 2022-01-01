@@ -8,6 +8,7 @@
 #ifndef OGLD_VERTEXARRAY_HPP
 #define OGLD_VERTEXARRAY_HPP
 
+#include <cstdint>
 #include "OpenGL/gl_core_4_5.hpp"
 
 namespace ogld

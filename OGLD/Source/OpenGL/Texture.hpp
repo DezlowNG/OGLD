@@ -18,14 +18,13 @@ namespace ogld
         Texture();
 
         void Load(const std::string& path);
-
-        void Bind();
-
-        void UnBind();
+        void Bind() const;
+        void Bind(size_t index) const;
+        void UnBind() const;
     private:
         bool GenerateSampler();
 
-        uint32_t mTextureID;
+        uint32_t mTextureID{};
     };
 }
 

@@ -23,6 +23,8 @@ bool ogld::Application::MainLoop()
     {
         glfwPollEvents();
 
+        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+
         mDeltaTime.currentFrame = glfwGetTime();
         mDeltaTime.delta = mDeltaTime.currentFrame - mDeltaTime.lastFrame;
         mDeltaTime.lastFrame = mDeltaTime.currentFrame;
@@ -34,7 +36,6 @@ bool ogld::Application::MainLoop()
         mAppCamera.keyboard_callback(mWindow, mDeltaTime.delta);
 
         gl::ClearColor(properties.bg[0], properties.bg[1], properties.bg[2], properties.bg[3]);
-        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
         if (!AppUpdate()) return false;
 
@@ -60,6 +61,7 @@ void ogld::Application::Run()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_SAMPLES, 16);
     mWindow = glfwCreateWindow(properties.width, properties.height, std::string(properties.title + std::string(" | FPS: 0")).c_str(), nullptr, nullptr);
 
     if (mWindow == nullptr)

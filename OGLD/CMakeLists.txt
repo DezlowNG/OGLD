@@ -8,8 +8,14 @@ find_package(OpenGL REQUIRED)
 include_directories(/ThirdParty)
 
 file(GLOB OGLD_SOURCE_FILES
-        "Source/Components/*/*.cpp"
-        "Source/Components/*/*.hpp"
+        "Source/Components/Camera/*.cpp"
+        "Source/Components/Camera/*.hpp"
+        "Source/Objects/*.cpp"
+        "Source/Objects/*.hpp"
+        "Source/Objects/Terrain/*.cpp"
+        "Source/Objects/Terrain/*.hpp"
+        "Source/Objects/Cube/*.cpp"
+        "Source/Objects/Cube/*.hpp"
         "Source/Core/*.cpp"
         "Source/Core/*.hpp"
         "Source/OpenGL/*.cpp"

@@ -55,7 +55,7 @@ namespace ogld
 
         double GetDelta() const { return mDeltaTime.delta; }
         GLFWwindow* GetWindow() { return mWindow; }
-        glm::mat4 GetCameraView() { return mAppCamera.GetViewMatrix(); }
+        const Camera* GetCamera() { return &mAppCamera; }
     private:
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void MouseCallback(GLFWwindow* window, double xpos, double ypos);

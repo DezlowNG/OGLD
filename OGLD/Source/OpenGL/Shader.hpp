@@ -35,6 +35,10 @@ namespace ogld
             gl::Uniform1f(GetUniformLocation(uname), uvalue);
         }
 
+        inline void SetUniform(const char* uname, int uvalue) {
+            gl::Uniform1i(GetUniformLocation(uname), uvalue);
+        }
+
         inline void SetUniform(const char* uname, const glm::vec3& uvalue) {
             gl::Uniform3fv(GetUniformLocation(uname), 1, &uvalue[0]);
         }

@@ -25,7 +25,7 @@ void ogld::Texture::Load(const std::string& path)
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
     if (data)
     {
-        gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB, width, height, 0, gl::RGB, gl::UNSIGNED_BYTE, data);
+        gl::TexImage2D(gl::TEXTURE_2D, 0, nrChannels == 4 ? gl::SRGB_ALPHA : gl::SRGB, width, height, 0, nrChannels == 4 ? gl::RGBA : gl::RGB, gl::UNSIGNED_BYTE, data);
         gl::GenerateMipmap(gl::TEXTURE_2D);
     }
     else
@@ -35,12 +35,13 @@ void ogld::Texture::Load(const std::string& path)
     stbi_image_free(data);
 }
 
-void ogld::Texture::Bind()
+void ogld::Texture::Bind() const
 {
+    gl::ActiveTexture(gl::TEXTURE0);
     gl::BindTexture(gl::TEXTURE_2D, mTextureID);
 }
 
-void ogld::Texture::UnBind()
+void ogld::Texture::UnBind() const
 {
     gl::BindTexture(gl::TEXTURE_2D, 0);
 }
@@ -53,8 +54,14 @@ bool ogld::Texture::GenerateSampler()
     gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT);
     gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT);
 
-    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR);
+    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
     gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR);
 
     return true;
+}
+
+void ogld::Texture::Bind(size_t index) const
+{
+    gl::ActiveTexture(gl::TEXTURE0 + index);
+    gl::BindTexture(gl::TEXTURE_2D, mTextureID);
 }
