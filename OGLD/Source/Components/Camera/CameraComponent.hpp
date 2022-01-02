@@ -23,7 +23,7 @@ namespace ogld
         void keyboard_callback(GLFWwindow* window, float deltaTime);
         void mouse_callback(float xpos, float ypos);
 
-        const glm::mat4& GetViewMatrix() const { return glm::lookAt(mPosition, mPosition + mFront, mUp); }
+        glm::mat4 GetViewMatrix() const { return glm::lookAt(mPosition, mPosition + mFront, mUp); }
         const glm::vec3& GetPosition() const { return mPosition; }
         const glm::vec3& GetFront() const { return mFront; }
     private:

@@ -20,9 +20,9 @@ void ogld::Terrain::Create(float x, float y, float z)
     mVAO.Init();
     mVAO.Bind();
     mVBO.Create(sizeof(vertices), vertices);
-    VertexBuffer::PushLayout<float>(0, 3, 8, 0);
-    VertexBuffer::PushLayout<float>(1, 3, 8, 3);
-    VertexBuffer::PushLayout<float>(2, 2, 8, 6);
+    VertexBuffer::PushLayoutFloat(0, 3, 8, 0);
+    VertexBuffer::PushLayoutFloat(1, 3, 8, 3);
+    VertexBuffer::PushLayoutFloat(2, 2, 8, 6);
     mVBO.UnBind();
     mVAO.UnBind();
 }

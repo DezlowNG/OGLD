@@ -14,6 +14,8 @@
 
 #include "Components/Camera/CameraComponent.hpp"
 
+#include <memory>
+
 namespace ogld
 {
     class Application

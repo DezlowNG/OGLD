@@ -7,6 +7,7 @@
 //If u want debug project then uncomment next lines:
 //#define OGLD_DEBUG
 //#define OGLD_TRACK_MEMORY
+#include <stb/stb_image.h>
 #include "OGLD.hpp"
 
 #include "Objects/Terrain/Terrain.hpp"
@@ -33,7 +34,8 @@ protected:
         gl::Enable(gl::MULTISAMPLE);
         mShader.LoadFromFile("Shaders/shader.glsl");
         mDepthShader.LoadFromFile("Shaders/shadow_mapping.glsl");
-        mCubeTexture.Load("Textures/box_wood_diffuse.jpg");
+        mCubeDMap.Load("Textures/box_wood_diffuse.png");
+        mCubeSMap.Load("Textures/box_wood_specular.png");
         mTerrainTexture.Load("Textures/terrain_diffuse.jpg");
         mTerrain.Create(5.0f, 0.5f, 5.0f);
         mCube.Create(1.0f, 1.0f, 1.0f);
@@ -41,8 +43,9 @@ protected:
         mDepthFBO.Create(mDepthMap.GetID());
 
         mShader.Use();
-        mShader.SetUniform("diffuseTexture", 0);
-        mShader.SetUniform("shadowMap", 1);
+        mShader.SetUniform("material.diffuse", 0);
+        mShader.SetUniform("material.specular", 1);
+        mShader.SetUniform("shadowMap", 2);
 
         return true;
     }
@@ -56,7 +59,6 @@ protected:
         glm::mat4 projection = glm::perspective(glm::radians(90.0f),
                                                 (float)properties.width / (float)properties.height,
                                                 0.1f, 100.0f);
-
 
         lightPos.x = sin(glfwGetTime()) * 3.0f;
         lightPos.z = cos(glfwGetTime()) * 2.0f;
@@ -81,16 +83,13 @@ protected:
         gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         gl::Viewport(0, 0, properties.width, properties.height);
 
-        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
-        gl::Viewport(0, 0, properties.width, properties.height);
-
         mShader.Use();
         mShader.SetUniform("projection", projection);
         mShader.SetUniform("view", view);
         mShader.SetUniform("viewPos", GetCamera()->GetPosition());
-        mShader.SetUniform("lightPos", lightPos);
+        mShader.SetUniform("light.position", lightPos);
         mShader.SetUniform("lightSpaceMatrix", lightSpaceMatrix);
-        mDepthMap.Bind(1);
+        mDepthMap.Bind(2);
         renderScene(mShader);
 
 #ifdef OGLD_DEBUG
@@ -120,7 +119,8 @@ private:
         mTerrain.Draw();
         mTerrainTexture.UnBind();
 
-        mCubeTexture.Bind();
+        mCubeDMap.Bind();
+        mCubeSMap.Bind(1);
 
         mCube.SetModel(glm::mat4(1.0f));
         mCube.Translate(glm::vec3(0.0f, 1.5f, 0.0f));
@@ -140,12 +140,14 @@ private:
         mCube.Rotate(glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
         shader.SetUniform("model", mCube.GetModel());
         mCube.Draw();
-        mCubeTexture.UnBind();
+        mCubeSMap.UnBind();
+        mCubeDMap.UnBind();
     }
 
     ogld::Shader mShader{};
     ogld::Shader mDepthShader{};
-    ogld::Texture mCubeTexture{};
+    ogld::Texture mCubeDMap{};
+    ogld::Texture mCubeSMap{};
     ogld::Texture mTerrainTexture{};
     ogld::Terrain mTerrain{};
     ogld::Cube mCube{};
@@ -157,5 +159,5 @@ private:
 
 std::shared_ptr<ogld::Application> ogld::CreateApplication()
 {
-	return std::make_shared<DemoApplication>();
+    return std::make_shared<DemoApplication>();
 }
