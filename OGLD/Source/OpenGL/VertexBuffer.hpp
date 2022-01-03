@@ -31,11 +31,7 @@ namespace ogld
 
         void UnBind() const { gl::BindBuffer(gl::ARRAY_BUFFER, 0); }
 
-//        template<class T>
-//        static void PushLayout(uint32_t id, uint32_t size, uint32_t stride, uint32_t pointer) {}
-//
-//        template<>
-        static void PushLayoutFloat(uint32_t id, uint32_t size, uint32_t stride, uint32_t pointer)
+        static void PushLayout(uint32_t id, uint32_t size, uint32_t stride, uint32_t pointer)
         {
             gl::EnableVertexAttribArray(id);
             gl::VertexAttribPointer(id, size, gl::FLOAT, gl::FALSE_, stride * sizeof(float), (void*) (pointer == 0 ? 0 : (pointer * sizeof(float))));
@@ -46,4 +42,4 @@ namespace ogld
     };
 }
 
-#endif //OGLD_VERTEXBUFFER_H
+#endif //OGLD_VERTEXBUFFER_HPP
