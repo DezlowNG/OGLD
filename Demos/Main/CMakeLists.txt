@@ -8,8 +8,8 @@ set(CMAKE_BINARY_DIR "${PROJECT_SOURCE_DIR}../../../bin/${CMAKE_SYSTEM_NAME}/${C
 file(GLOB SHADERFILES "Shaders/*.glsl")
 file(GLOB TEXTUREFILES "Textures/*.jpg" "Textures/*.png")
 
-#file(COPY ${SHADERFILES} DESTINATION ${CMAKE_BINARY_DIR}/Shaders/)
-#file(COPY ${TEXTUREFILES} DESTINATION ${CMAKE_BINARY_DIR}/Textures/)
+file(COPY ${SHADERFILES} DESTINATION ${CMAKE_BINARY_DIR}/Shaders/)
+file(COPY ${TEXTUREFILES} DESTINATION ${CMAKE_BINARY_DIR}/Textures/)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/)
 
@@ -23,8 +23,8 @@ endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 include_directories(../../OGLD/Source/)
 
 file(GLOB SOURCE_FILES
-        "Source/*.hpp"
-        "Source/*.cpp"
+        "Source/DemoApp.cpp"
+        "Source/DemoApp.hpp"
         )
 
 add_executable(OGLD_DEMO_MAIN

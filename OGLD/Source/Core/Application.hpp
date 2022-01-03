@@ -73,7 +73,7 @@ namespace ogld
         bool MainLoop();
     };
 
-    std::shared_ptr<Application> CreateApplication();
+    const std::shared_ptr<Application> CreateApplication();
 }
 
 
