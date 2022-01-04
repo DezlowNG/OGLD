@@ -58,3 +58,8 @@ void ogld::Texture::Bind(size_t index) const
     gl::ActiveTexture(gl::TEXTURE0 + index);
     gl::BindTexture(gl::TEXTURE_2D, mTextureID);
 }
+
+ogld::Texture::~Texture()
+{
+    gl::CreateTextures(gl::TEXTURE_2D, 1, &mTextureID);
+}

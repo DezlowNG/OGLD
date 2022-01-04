@@ -16,6 +16,7 @@ namespace ogld
     {
     public:
         Texture();
+        ~Texture();
 
         void Load(const std::string& path);
         void Bind() const;
