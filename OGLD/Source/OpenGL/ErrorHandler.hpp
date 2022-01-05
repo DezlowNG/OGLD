@@ -9,6 +9,7 @@
 #define OGLD_ERRORHANDLER_HPP
 
 #include "OpenGL/gl_core_4_5.hpp"
+#include <iostream>
 
 #define ASSERT(x) if (!(x)) __debugbreak();
 

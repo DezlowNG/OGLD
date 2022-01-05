@@ -23,6 +23,7 @@ bool ogld::Application::MainLoop()
     {
         glfwPollEvents();
 
+        gl::ClearColor(properties.bg[0], properties.bg[1], properties.bg[2], properties.bg[3]);
         gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
         mDeltaTime.currentFrame = glfwGetTime();
@@ -35,7 +36,6 @@ bool ogld::Application::MainLoop()
 
         mAppCamera.keyboard_callback(mWindow, mDeltaTime.delta);
 
-        gl::ClearColor(properties.bg[0], properties.bg[1], properties.bg[2], properties.bg[3]);
 
         if (!AppUpdate()) return false;
 
@@ -61,7 +61,7 @@ void ogld::Application::Run()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    //glfwWindowHint(GLFW_SAMPLES, 16);
+    glfwWindowHint(GLFW_SAMPLES, 8);
     mWindow = glfwCreateWindow(properties.width, properties.height, std::string(properties.title + std::string(" | FPS: 0")).c_str(), nullptr, nullptr);
 
     if (mWindow == nullptr)
@@ -71,13 +71,17 @@ void ogld::Application::Run()
         throw std::runtime_error("OGLD: Failed to create window!");
     }
 
+
     glfwMakeContextCurrent(mWindow);
+    glfwSwapInterval(properties.vsync);
     glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
 
-    if (properties.vsync)
-        glfwSwapInterval(1);
-
     gl::Enable(gl::DEPTH_TEST);
+    gl::Enable(gl::MULTISAMPLE);
+    gl::DepthFunc(gl::LESS);
+    gl::Enable(gl::CULL_FACE);
+    gl::CullFace(gl::BACK);
+    gl::FrontFace(gl::CCW);
 
     if (!AppInit())
         throw std::runtime_error("OGLD: Failed to call AppInit function! Please, check your code for errors!");
@@ -91,7 +95,6 @@ void ogld::Application::Run()
     std::cout << "GLSL Version: " << gl::GetString(gl::SHADING_LANGUAGE_VERSION) << '\n';
 
     glfwSetWindowUserPointer(mWindow, this);
-
     glfwSetKeyCallback(mWindow, Application::KeyCallback);
     glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(mWindow, Application::MouseCallback);

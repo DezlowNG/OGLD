@@ -9,7 +9,6 @@
 #define OGLD_SHADER_HPP
 
 #include <unordered_map>
-#include "OpenGL/gl_core_4_5.hpp"
 
 #include "glm/vec3.hpp"
 #include "glm/mat4x4.hpp"
@@ -20,37 +19,19 @@ namespace ogld
     {
     public:
         Shader() = default;
-
-		~Shader()
-    	{
-            gl::DeleteShader(mID);
-			mUniformLocationCache.clear();
-        }
-
-        inline void Use() const { gl::UseProgram(mID); }
-
+		~Shader();
+        void Use() const;
         void LoadFromFile(const char* shaderPath);
 
-        inline void SetUniform(const char* uname, float uvalue) {
-            gl::Uniform1f(GetUniformLocation(uname), uvalue);
-        }
-
-        inline void SetUniform(const char* uname, int uvalue) {
-            gl::Uniform1i(GetUniformLocation(uname), uvalue);
-        }
-
-        inline void SetUniform(const char* uname, const glm::vec3& uvalue) {
-            gl::Uniform3fv(GetUniformLocation(uname), 1, &uvalue[0]);
-        }
-
-        inline void SetUniform(const char* uname, const glm::mat4& uvalue) {
-            gl::UniformMatrix4fv(GetUniformLocation(uname), 1, gl::FALSE_, &uvalue[0][0]);
-        }
+        void SetUniform(const char* uname, float uvalue);
+        void SetUniform(const char* uname, int uvalue);
+        void SetUniform(const char* uname, const glm::vec3& uvalue);
+        void SetUniform(const char* uname, const glm::mat4& uvalue);
     private:
-        mutable std::unordered_map<const char*, GLint> mUniformLocationCache;
+        mutable std::unordered_map<const char*, int> mUniformLocationCache;
         uint32_t mID{};
 
-        GLint GetUniformLocation(const char* name) const;
+        int GetUniformLocation(const char* name) const;
     };
 }
 

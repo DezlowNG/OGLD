@@ -21,7 +21,6 @@
 #include "OpenGL/Shader.hpp"
 #include "OpenGL/Texture.hpp"
 #include "OpenGL/VertexBuffer.hpp"
-#include <memory>
 
 class DemoApp : public ogld::Application
 {
@@ -44,6 +43,7 @@ private:
     void renderScene(ogld::Shader& shader);
     ogld::Shader mShader{};
     ogld::Shader mDepthShader{};
+    ogld::Shader mOneColorShader{};
     ogld::Texture mCubeDMap{};
     ogld::Texture mCubeSMap{};
     ogld::Texture mTerrainTexture{};
@@ -55,7 +55,7 @@ private:
     glm::vec3 lightPos = glm::vec3(-2.0f, 4.0f, -1.0f);
 };
 
-const std::shared_ptr<ogld::Application> ogld::CreateApplication()
+std::shared_ptr<ogld::Application> ogld::CreateApplication()
 {
     return std::make_shared<DemoApp>();
 }

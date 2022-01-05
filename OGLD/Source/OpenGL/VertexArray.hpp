@@ -17,15 +17,10 @@ namespace ogld
     {
     public:
         VertexArray() = default;
-
         ~VertexArray() { gl::DeleteVertexArrays(1, &mID); }
-
         void Init() { gl::GenVertexArrays(1, &mID); }
-
         void Bind() const { gl::BindVertexArray(mID); }
-
         void UnBind() const { gl::BindVertexArray(0); }
-
     private:
         uint32_t mID;
     };

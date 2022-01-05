@@ -5,42 +5,9 @@
 
 #include "DemoApp.hpp"
 
-void DemoApp::renderScene(ogld::Shader& shader)
-{
-    mTerrainTexture.Bind();
-    mTerrain.SetModel(glm::mat4(1.0f));
-    shader.SetUniform("model", mTerrain.GetModel());
-    mTerrain.Draw();
-    mTerrainTexture.UnBind();
-
-    mCubeDMap.Bind();
-    mCubeSMap.Bind(1);
-
-    mCube.SetModel(glm::mat4(1.0f));
-    mCube.Translate(glm::vec3(0.0f, 1.5f, 0.0f));
-    mCube.Scale(glm::vec3(0.5f));
-    shader.SetUniform("model", mCube.GetModel());
-    mCube.Draw();
-
-    mCube.SetModel(glm::mat4(1.0f));
-    mCube.Translate(glm::vec3(2.0f, 0.0f, 1.0f));
-    mCube.Scale(glm::vec3(0.5f));
-    shader.SetUniform("model", mCube.GetModel());
-    mCube.Draw();
-
-    mCube.SetModel(glm::mat4(1.0f));
-    mCube.Translate(glm::vec3(-1.0f, 0.0f, 2.0f));
-    mCube.Scale(glm::vec3(0.25f));
-    mCube.Rotate(glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    shader.SetUniform("model", mCube.GetModel());
-    mCube.Draw();
-    mCubeSMap.UnBind();
-    mCubeDMap.UnBind();
-}
-
 bool DemoApp::AppPreInit()
 {
-    properties.vsync = true;
+    properties.vsync = 0;
     properties.title = "OGLD: Main Demo";
 
     return true;
@@ -48,7 +15,6 @@ bool DemoApp::AppPreInit()
 
 bool DemoApp::AppInit()
 {
-    gl::Enable(gl::MULTISAMPLE);
     mShader.LoadFromFile("Shaders/shader.glsl");
     mDepthShader.LoadFromFile("Shaders/shadow_mapping.glsl");
     mCubeDMap.Load("Textures/box_wood_diffuse.png");
@@ -83,11 +49,16 @@ bool DemoApp::AppUpdate()
 
     glm::mat4 lightProjection, lightView;
     glm::mat4 lightSpaceMatrix;
-    float near_plane = 1.0f, far_plane = 7.5f;
-    lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+    lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
     lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;
 
+    mShader.Use();
+    mShader.SetUniform("projection", projection);
+    mShader.SetUniform("view", view);
+    mShader.SetUniform("viewPos", GetCamera()->GetPosition());
+    mShader.SetUniform("light.position", lightPos);
+    mShader.SetUniform("lightSpaceMatrix", lightSpaceMatrix);
     mDepthShader.Use();
     mDepthShader.SetUniform("lightSpaceMatrix", lightSpaceMatrix);
 
@@ -97,15 +68,9 @@ bool DemoApp::AppUpdate()
     renderScene(mDepthShader);
     mDepthFBO.UnBind();
 
-    gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
     gl::Viewport(0, 0, properties.width, properties.height);
-
+    gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
     mShader.Use();
-    mShader.SetUniform("projection", projection);
-    mShader.SetUniform("view", view);
-    mShader.SetUniform("viewPos", GetCamera()->GetPosition());
-    mShader.SetUniform("light.position", lightPos);
-    mShader.SetUniform("lightSpaceMatrix", lightSpaceMatrix);
     mDepthMap.Bind(2);
     renderScene(mShader);
 
@@ -113,4 +78,40 @@ bool DemoApp::AppUpdate()
     ASSERT(ogld::ErrorHandler::GLLogCall());
 #endif
     return true;
+}
+
+void DemoApp::renderScene(ogld::Shader& shader)
+{
+    gl::Disable(gl::CULL_FACE);
+    mTerrainTexture.Bind();
+    mTerrain.SetModel(glm::mat4(1.0f));
+    shader.SetUniform("model", mTerrain.GetModel());
+    mTerrain.Draw();
+    mTerrainTexture.UnBind();
+    gl::Enable(gl::CULL_FACE);
+
+    mCubeDMap.Bind();
+    mCubeSMap.Bind(1);
+
+    mCube.SetModel(glm::mat4(1.0f));
+    mCube.Translate(glm::vec3(0.0f, 1.5f, 0.0f));
+    mCube.Scale(glm::vec3(0.5f));
+    shader.SetUniform("model", mCube.GetModel());
+    mCube.Draw();
+
+    mCube.SetModel(glm::mat4(1.0f));
+    mCube.Translate(glm::vec3(2.0f, 0.0f, 1.0f));
+    mCube.Scale(glm::vec3(0.5f));
+    shader.SetUniform("model", mCube.GetModel());
+    mCube.Draw();
+
+    mCube.SetModel(glm::mat4(1.0f));
+    mCube.Translate(glm::vec3(-1.0f, 0.0f, 2.0f));
+    mCube.Scale(glm::vec3(0.25f));
+    mCube.Rotate(glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
+    shader.SetUniform("model", mCube.GetModel());
+    mCube.Draw();
+
+    mCubeSMap.UnBind();
+    mCubeDMap.UnBind();
 }

@@ -12,6 +12,8 @@
 #include "glm/vec3.hpp"
 #include "glm/mat4x4.hpp"
 
+#include "OpenGL/gl_core_4_5.hpp"
+
 uint32_t CreateVertexShader(const char* shaderSrc);
 uint32_t CreateFragmentShader(const char* shaderSrc);
 uint32_t CreateProgram(const uint32_t& vertexShaderID, const uint32_t& fragmentShaderID);
@@ -82,6 +84,37 @@ GLint ogld::Shader::GetUniformLocation(const char* name) const
     return location;
 }
 
+void ogld::Shader::Use() const
+{
+    gl::UseProgram(mID);
+}
+
+void ogld::Shader::SetUniform(const char* uname, float uvalue)
+{
+    gl::Uniform1f(GetUniformLocation(uname), uvalue);
+}
+
+void ogld::Shader::SetUniform(const char* uname, int uvalue)
+{
+    gl::Uniform1i(GetUniformLocation(uname), uvalue);
+}
+
+void ogld::Shader::SetUniform(const char* uname, const glm::vec3& uvalue)
+{
+    gl::Uniform3fv(GetUniformLocation(uname), 1, &uvalue[0]);
+}
+
+void ogld::Shader::SetUniform(const char* uname, const glm::mat4& uvalue)
+{
+    gl::UniformMatrix4fv(GetUniformLocation(uname), 1, gl::FALSE_, &uvalue[0][0]);
+}
+
+ogld::Shader::~Shader()
+{
+    gl::DeleteShader(mID);
+    mUniformLocationCache.clear();
+}
+
 uint32_t CreateVertexShader(const char* shaderSrc)
 {
     uint32_t shaderID = gl::CreateShader(gl::VERTEX_SHADER);
@@ -121,15 +154,9 @@ void CheckCompileErrors(const uint32_t& shader, const char* type)
     int succes;
     char infoLog[512];
 
-    /*
-     * DONT WRITE:
-     * if (type == "PROGRAM")
-     * because result will ALWAYS TRUE
-     */
     if (std::strcmp(type, "PROGRAM") != 0)
     {
         gl::GetShaderiv(shader, gl::COMPILE_STATUS, &succes);
-
         if (!succes)
         {
             gl::GetShaderInfoLog(shader, 512, nullptr, infoLog);
@@ -139,7 +166,6 @@ void CheckCompileErrors(const uint32_t& shader, const char* type)
     else
     {
         gl::GetProgramiv(shader, gl::LINK_STATUS, &succes);
-
         if (!succes)
         {
             gl::GetProgramInfoLog(shader, 512, nullptr, infoLog);

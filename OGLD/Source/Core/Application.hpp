@@ -26,7 +26,11 @@ namespace ogld
             uint16_t width = 1280;
             uint16_t height = 720;
             float bg[4]{ 0.1f, 0.1f, 0.1f, 1.0f };
-            bool vsync = true;
+            uint8_t vsync = 1;
+            struct graphics
+            {
+
+            };
         };
 
         struct DTSturct
@@ -73,7 +77,7 @@ namespace ogld
         bool MainLoop();
     };
 
-    const std::shared_ptr<Application> CreateApplication();
+    std::shared_ptr<Application> CreateApplication();
 }
 
 
