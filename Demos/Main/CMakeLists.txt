@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(OGLD_DEMO_MAIN)
+project(OGLD_MAIN)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -23,11 +23,11 @@ endforeach(OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES)
 include_directories(../../OGLD/Source/)
 
 file(GLOB SOURCE_FILES
-        "Source/DemoApp.cpp"
-        "Source/DemoApp.hpp"
+        "Source/MainApp.cpp"
+        "Source/MainApp.hpp"
         )
 
-add_executable(OGLD_DEMO_MAIN
+add_executable(${CMAKE_PROJECT_NAME}
         ${SOURCE_FILES}
         )
 

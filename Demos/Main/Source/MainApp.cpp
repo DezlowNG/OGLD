@@ -3,12 +3,15 @@
 // Copyright (c) 2022 Oneiro Games. All rights reserved.
 //
 
-#include "DemoApp.hpp"
+#include "MainApp.hpp"
 
 bool DemoApp::AppPreInit()
 {
     properties.vsync = 0;
     properties.title = "OGLD: Main Demo";
+    properties.msaa.enabled = true;
+    properties.msaa.level = 8;
+    properties.camera.enabled = true;
 
     return true;
 }

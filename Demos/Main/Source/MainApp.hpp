@@ -3,11 +3,10 @@
 // Copyright (c) 2022 Oneiro Games. All rights reserved.
 //
 
-
 #pragma once
 
-#ifndef OGLD_DEMOAPP_HPP
-#define OGLD_DEMOAPP_HPP
+#ifndef OGLD_MAINAPP_HPP
+#define OGLD_MAINAPP_HPP
 
 //If u want debug project then uncomment next lines:
 //#define OGLD_DEBUG
@@ -28,7 +27,6 @@ protected:
     bool AppPreInit() override;
     bool AppInit() override;
     bool AppUpdate() override;
-
 #ifdef OGLD_TRACK_MEMORY
     bool AppClosed() override
     {
@@ -60,4 +58,4 @@ std::shared_ptr<ogld::Application> ogld::CreateApplication()
     return std::make_shared<DemoApp>();
 }
 
-#endif //OGLD_DEMOAPP_HPP
+#endif //OGLD_MAINAPP_HPP

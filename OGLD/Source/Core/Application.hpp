@@ -25,12 +25,18 @@ namespace ogld
             const char* title = "OGLD";
             uint16_t width = 1280;
             uint16_t height = 720;
-            float bg[4]{ 0.1f, 0.1f, 0.1f, 1.0f };
             uint8_t vsync = 1;
-            struct graphics
+            struct CameraProps
             {
-
+                bool enabled = false;
             };
+            struct MSAAProps
+            {
+                bool enabled = true;
+                uint8_t level = 0;
+            };
+            MSAAProps msaa;
+            CameraProps camera;
         };
 
         struct DTSturct

@@ -23,7 +23,7 @@ bool ogld::Application::MainLoop()
     {
         glfwPollEvents();
 
-        gl::ClearColor(properties.bg[0], properties.bg[1], properties.bg[2], properties.bg[3]);
+        gl::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
         mDeltaTime.currentFrame = glfwGetTime();
@@ -35,7 +35,6 @@ bool ogld::Application::MainLoop()
             CalculateFPS();
 
         mAppCamera.keyboard_callback(mWindow, mDeltaTime.delta);
-
 
         if (!AppUpdate()) return false;
 
@@ -61,7 +60,9 @@ void ogld::Application::Run()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_SAMPLES, 8);
+    if (properties.msaa.enabled)
+        glfwWindowHint(GLFW_SAMPLES, properties.msaa.level);
+
     mWindow = glfwCreateWindow(properties.width, properties.height, std::string(properties.title + std::string(" | FPS: 0")).c_str(), nullptr, nullptr);
 
     if (mWindow == nullptr)
@@ -71,13 +72,12 @@ void ogld::Application::Run()
         throw std::runtime_error("OGLD: Failed to create window!");
     }
 
-
     glfwMakeContextCurrent(mWindow);
     glfwSwapInterval(properties.vsync);
     glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
 
     gl::Enable(gl::DEPTH_TEST);
-    gl::Enable(gl::MULTISAMPLE);
+    if (properties.msaa.enabled) gl::Enable(gl::MULTISAMPLE);
     gl::DepthFunc(gl::LESS);
     gl::Enable(gl::CULL_FACE);
     gl::CullFace(gl::BACK);
@@ -85,7 +85,7 @@ void ogld::Application::Run()
 
     if (!AppInit())
         throw std::runtime_error("OGLD: Failed to call AppInit function! Please, check your code for errors!");
-
+#ifdef _DEBUG
     GLint GLVerMajor, GLVerMinor;
     gl::GetIntegerv(gl::MAJOR_VERSION, &GLVerMajor);
     gl::GetIntegerv(gl::MINOR_VERSION, &GLVerMinor);
@@ -93,11 +93,16 @@ void ogld::Application::Run()
     std::cout << "GPU: " << gl::GetString(gl::RENDERER) << '\n';
     std::cout << "OpenGL Version: " << GLVerMajor << "." << GLVerMinor << '\n';
     std::cout << "GLSL Version: " << gl::GetString(gl::SHADING_LANGUAGE_VERSION) << '\n';
+#endif
 
-    glfwSetWindowUserPointer(mWindow, this);
+    if (properties.camera.enabled)
+    {
+        glfwSetWindowUserPointer(mWindow, this);
+        glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetCursorPosCallback(mWindow, Application::MouseCallback);
+    }
+
     glfwSetKeyCallback(mWindow, Application::KeyCallback);
-    glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPosCallback(mWindow, Application::MouseCallback);
 
     if (!MainLoop())
         throw std::runtime_error("OGLD: Failed to call AppUpdate function! Please, check your code for errors!");
