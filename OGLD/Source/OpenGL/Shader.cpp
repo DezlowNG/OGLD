@@ -22,7 +22,7 @@ void CheckCompileErrors(const uint32_t& shader, const char* type);
 enum ShaderType
 {
     VERTEX,
-    FRAGMENT,
+    FRAGMENT
 };
 
 void ogld::Shader::LoadFromFile(const char* shaderPath)

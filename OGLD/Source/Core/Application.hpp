@@ -33,7 +33,7 @@ namespace ogld
             struct MSAAProps
             {
                 bool enabled = true;
-                uint8_t level = 0;
+                uint8_t level = 8;
             };
             MSAAProps msaa;
             CameraProps camera;

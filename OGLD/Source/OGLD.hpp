@@ -47,11 +47,11 @@
     #include "Core/EntryPoint.hpp"
 #endif
 
-#if defined(OGLD_TRACK_MEMORY) && defined(_DEBUG)
+#if defined(OGLD_TRACK_MEMORY)
     #include "OpenGL/ErrorHandler.hpp"
 #endif
 
-#if defined(OGLD_TRACK_MEMORY) && defined(_DEBUG)
+#if defined(OGLD_TRACK_MEMORY)
 static int64_t allocMemory{};
 void* operator new(size_t size)
 {

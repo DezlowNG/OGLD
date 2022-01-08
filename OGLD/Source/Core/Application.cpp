@@ -127,6 +127,19 @@ void ogld::Application::KeyCallback(GLFWwindow* window, int key, int scancode, i
     {
         glfwSetWindowShouldClose(window, 1);
     }
+    if (key == GLFW_KEY_G && action == GLFW_PRESS)
+    {
+        if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+            glfwSetCursorPosCallback(window, nullptr);
+        }
+        else
+        {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            glfwSetCursorPosCallback(window, Application::MouseCallback);
+        }
+    }
 }
 
 void ogld::Application::MouseCallback(GLFWwindow* window, double xpos, double ypos)

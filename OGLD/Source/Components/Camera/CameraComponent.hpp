@@ -13,21 +13,18 @@
 #include <glm/vec3.hpp>
 
 #include <GLFW/glfw3.h>
+#include <Components/Component.hpp>
 
 namespace ogld
 {
-    class Camera
+    class Camera : public Component
     {
     public:
         Camera();
         void keyboard_callback(GLFWwindow* window, float deltaTime);
         void mouse_callback(float xpos, float ypos);
-
         glm::mat4 GetViewMatrix() const { return glm::lookAt(mPosition, mPosition + mFront, mUp); }
-        const glm::vec3& GetPosition() const { return mPosition; }
-        const glm::vec3& GetFront() const { return mFront; }
     private:
-        glm::vec3 mPosition{};
         glm::vec3 mFront{};
         glm::vec3 mUp{};
         glm::vec3 mRight{};
