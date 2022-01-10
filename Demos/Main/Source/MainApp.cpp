@@ -102,7 +102,7 @@ void DemoApp::renderScene(ogld::Shader& shader)
     mCube.SetPosition(glm::vec3(-1.0f, 0.0f, 2.0f));
     mCube.SetScale(glm::vec3(0.25f));
     mCube.SetRotation(glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    shader.SetUniform("model", mCube.SetUpModel(model));
+    shader.SetUniform("model", mCube.SetUpModel(model, true));
     mCube.Draw();
 }
 

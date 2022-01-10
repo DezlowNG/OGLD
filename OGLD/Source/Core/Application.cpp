@@ -10,11 +10,6 @@
 
 ogld::Application::ApplicationProperties ogld::Application::properties{};
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    gl::Viewport(0, 0, width, height);
-}
-
 bool ogld::Application::MainLoop()
 {
     mFPS.prevTime = glfwGetTime();
@@ -74,7 +69,6 @@ void ogld::Application::Run()
 
     glfwMakeContextCurrent(mWindow);
     glfwSwapInterval(properties.vsync);
-    glfwSetFramebufferSizeCallback(mWindow, framebuffer_size_callback);
 
     gl::Enable(gl::DEPTH_TEST);
     if (properties.msaa.enabled) gl::Enable(gl::MULTISAMPLE);
@@ -101,7 +95,7 @@ void ogld::Application::Run()
         glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursorPosCallback(mWindow, Application::MouseCallback);
     }
-
+    glfwSetFramebufferSizeCallback(mWindow, Application::framebuffer_size_callback);
     glfwSetKeyCallback(mWindow, Application::KeyCallback);
 
     if (!MainLoop())
@@ -145,6 +139,13 @@ void ogld::Application::KeyCallback(GLFWwindow* window, int key, int scancode, i
 void ogld::Application::MouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
     auto* app = reinterpret_cast<ogld::Application*>(glfwGetWindowUserPointer(window));
-
     app->mAppCamera.mouse_callback(xpos, ypos);
+}
+
+void ogld::Application::framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    auto* app = reinterpret_cast<ogld::Application*>(glfwGetWindowUserPointer(window));
+    app->properties.width = width;
+    app->properties.height = height;
+    gl::Viewport(0, 0, width, height);
 }

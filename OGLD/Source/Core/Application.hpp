@@ -71,6 +71,7 @@ namespace ogld
     private:
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void MouseCallback(GLFWwindow* window, double xpos, double ypos);
+        static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
         GLFWwindow* mWindow{};
         DTSturct mDeltaTime;
