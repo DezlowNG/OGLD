@@ -16,8 +16,8 @@
 
 uint32_t CreateVertexShader(const char* shaderSrc);
 uint32_t CreateFragmentShader(const char* shaderSrc);
-uint32_t CreateProgram(const uint32_t& vertexShaderID, const uint32_t& fragmentShaderID);
-void CheckCompileErrors(const uint32_t& shader, const char* type);
+uint32_t CreateProgram(uint32_t vertexShaderID, uint32_t fragmentShaderID);
+void CheckCompileErrors(uint32_t shader, const char* type);
 
 enum ShaderType
 {
@@ -27,17 +27,17 @@ enum ShaderType
 
 void ogld::Shader::LoadFromFile(const char* shaderPath)
 {
-    std::string vertexShaderSrc;
-    std::string fragmentShaderSrc;
+    std::string vertexShaderSrc{};
+    std::string fragmentShaderSrc{};
 
-    std::ifstream shaderFile;
+    std::ifstream shaderFile{};
     
     try
     {
         shaderFile.open(shaderPath);
 
         std::stringstream ss[2];
-        std::string line;
+        std::string line{};
         ShaderType type{};
 
         while (std::getline(shaderFile, line))
@@ -65,8 +65,8 @@ void ogld::Shader::LoadFromFile(const char* shaderPath)
         std::cerr << ex.what() << std::endl;
     }
 
-    unsigned int vertexShader = CreateVertexShader(vertexShaderSrc.c_str()),
-            fragmentShader = CreateFragmentShader(fragmentShaderSrc.c_str());
+    uint32_t vertexShader = CreateVertexShader(vertexShaderSrc.c_str());
+    uint32_t fragmentShader = CreateFragmentShader(fragmentShaderSrc.c_str());
 
     mID = CreateProgram(vertexShader, fragmentShader);
 
@@ -137,7 +137,7 @@ uint32_t CreateFragmentShader(const char* shaderSrc)
     return shaderID;
 }
 
-uint32_t CreateProgram(const uint32_t& vertexShaderID, const uint32_t& fragmentShaderID)
+uint32_t CreateProgram(uint32_t vertexShaderID, uint32_t fragmentShaderID)
 {
     uint32_t programID = gl::CreateProgram();
 
@@ -149,7 +149,7 @@ uint32_t CreateProgram(const uint32_t& vertexShaderID, const uint32_t& fragmentS
     return programID;
 }
 
-void CheckCompileErrors(const uint32_t& shader, const char* type)
+void CheckCompileErrors(uint32_t shader, const char* type)
 {
     int succes;
     char infoLog[512];
