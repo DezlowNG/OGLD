@@ -6,14 +6,11 @@ set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-find_package(OpenGL REQUIRED)
 include_directories(/ThirdParty)
 
 file(GLOB OGLD_SOURCE_FILES
         "Source/Components/*/*.cpp"
         "Source/Components/*/*.hpp"
-        "Source/Components/*.cpp"
-        "Source/Components/*.hpp"
         "Source/Objects/*.cpp"
         "Source/Objects/*.hpp"
         "Source/Core/*.cpp"
@@ -22,7 +19,6 @@ file(GLOB OGLD_SOURCE_FILES
         "Source/OpenGL/*.hpp"
         "Source/*.cpp"
         "Source/*.hpp"
-        "../ThirdParty/OpenGL/gl_core_4_5.cpp"
         )
 
 file(GLOB IMGUI_SRC
@@ -36,6 +32,7 @@ add_library(OGLD_LIBRARY STATIC ${OGLD_SOURCE_FILES} ${IMGUI_SRC})
 
 add_subdirectory(../ThirdParty/glfw ThirdParty/glfw)
 add_subdirectory(../ThirdParty/glm ThirdParty/glm)
+add_subdirectory(../ThirdParty/OpenGL ThirdParty/OpenGL)
 
 target_include_directories(OGLD_LIBRARY PUBLIC
         ../ThirdParty/
@@ -43,7 +40,7 @@ target_include_directories(OGLD_LIBRARY PUBLIC
         )
 
 target_link_libraries(OGLD_LIBRARY
+        OGL
         glfw
         glm
-        OpenGL::GL
         )
