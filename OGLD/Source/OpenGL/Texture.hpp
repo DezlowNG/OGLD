@@ -22,9 +22,8 @@ namespace ogld
         void Bind() const;
         void Bind(size_t index) const;
         void UnBind() const;
-        uint32_t GetID() const { return mTextureID; }
     private:
-        uint32_t mTextureID{};
+        uint32_t mID{};
     };
 }
 

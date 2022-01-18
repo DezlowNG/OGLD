@@ -19,7 +19,7 @@ ogld::Texture::Texture()
 
 void ogld::Texture::Load(const std::string& path)
 {
-    gl::GenTextures(1, &mTextureID);
+    gl::GenTextures(1, &mID);
 
     int width, height, nrChannels;
     unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
@@ -45,7 +45,7 @@ void ogld::Texture::Load(const std::string& path)
 void ogld::Texture::Bind() const
 {
     gl::ActiveTexture(gl::TEXTURE0);
-    gl::BindTexture(gl::TEXTURE_2D, mTextureID);
+    gl::BindTexture(gl::TEXTURE_2D, mID);
 }
 
 void ogld::Texture::UnBind() const
@@ -56,10 +56,10 @@ void ogld::Texture::UnBind() const
 void ogld::Texture::Bind(size_t index) const
 {
     gl::ActiveTexture(gl::TEXTURE0 + index);
-    gl::BindTexture(gl::TEXTURE_2D, mTextureID);
+    gl::BindTexture(gl::TEXTURE_2D, mID);
 }
 
 ogld::Texture::~Texture()
 {
-    gl::CreateTextures(gl::TEXTURE_2D, 1, &mTextureID);
+    gl::DeleteTextures(1, &mID);
 }
