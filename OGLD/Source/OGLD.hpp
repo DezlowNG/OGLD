@@ -47,7 +47,7 @@
     #include "Core/EntryPoint.hpp"
 #endif
 
-#if defined(OGLD_TRACK_MEMORY)
+#if defined(OGLD_DEBUG)
     #include "OpenGL/ErrorHandler.hpp"
 #endif
 

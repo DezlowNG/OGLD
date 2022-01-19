@@ -1,0 +1,104 @@
+//
+// Created by Dezlow on 03.01.2022.
+// Copyright (c) 2022 Oneiro Games. All rights reserved.
+//
+
+#include "3DCubeApp.hpp"
+
+bool DemoApp::AppPreInit()
+{
+    properties.vsync = 0;
+    properties.title = "OGLD: Main Demo";
+    properties.msaa.enabled = true;
+    properties.msaa.level = 2;
+    properties.camera.enabled = true;
+
+    return true;
+}
+
+bool DemoApp::AppInit()
+{
+    mShader.LoadFromFile("Shaders/shader.glsl");
+    mCube.Init();
+    return true;
+}
+
+bool DemoApp::AppUpdate()
+{
+#ifdef OGLD_DEBUG
+    ogld::ErrorHandler::GLClearError();
+#endif
+    mShader.Use();
+    mShader.SetUniform("projection", glm::perspective(glm::radians(90.0f),
+                                                      (float)properties.width / (float)properties.height,
+                                                      0.1f, 100.0f));
+    mShader.SetUniform("view", GetCamera()->GetViewMatrix());
+
+    glm::mat4 model{1.0f};
+    mShader.SetUniform("model", mCube.SetUpModel(model));
+    mCube.Draw();
+
+#ifdef OGLD_DEBUG
+    ASSERT(ogld::ErrorHandler::GLLogCall());
+#endif
+    return true;
+}
+
+void CubeEntity::Init()
+{
+    constexpr float vertices[] = {
+           -1.0f, -1.0f, -1.0f,
+            1.0f,  1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f,  1.0f, -1.0f,
+           -1.0f, -1.0f, -1.0f,
+           -1.0f,  1.0f, -1.0f,
+
+           -1.0f, -1.0f,  1.0f,
+            1.0f, -1.0f,  1.0f,
+            1.0f,  1.0f,  1.0f,
+            1.0f,  1.0f,  1.0f,
+           -1.0f,  1.0f,  1.0f,
+           -1.0f, -1.0f,  1.0f,
+
+           -1.0f,  1.0f,  1.0f,
+           -1.0f,  1.0f, -1.0f,
+           -1.0f, -1.0f, -1.0f,
+           -1.0f, -1.0f, -1.0f,
+           -1.0f, -1.0f,  1.0f,
+           -1.0f,  1.0f,  1.0f,
+
+            1.0f,  1.0f,  1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f,  1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f,  1.0f,  1.0f,
+            1.0f, -1.0f,  1.0f,
+
+           -1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f, -1.0f,
+            1.0f, -1.0f,  1.0f,
+            1.0f, -1.0f,  1.0f,
+           -1.0f, -1.0f,  1.0f,
+           -1.0f, -1.0f, -1.0f,
+
+           -1.0f,  1.0f, -1.0f,
+            1.0f,  1.0f , 1.0f,
+            1.0f,  1.0f, -1.0f,
+            1.0f,  1.0f,  1.0f,
+           -1.0f,  1.0f, -1.0f,
+           -1.0f,  1.0f,  1.0f
+    };
+    mVAO.Init();
+    mVAO.Bind();
+    mVBO.Create(sizeof(vertices), vertices);
+    ogld::VertexBuffer::PushLayout(0,3,3,0);
+    mVBO.UnBind();
+    mVAO.UnBind();
+}
+
+void CubeEntity::Draw()
+{
+    mVAO.Bind();
+    gl::DrawArrays(gl::TRIANGLES, 0, 36);
+}
