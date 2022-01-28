@@ -13,9 +13,10 @@
 //#define OGLD_TRACK_MEMORY
 #define OGLD_INCLUDE_CORE
 #include "OGLD.hpp"
-#include "OpenGL/Shader.hpp"
-#include "OpenGL/VertexArray.hpp"
-#include "OpenGL/VertexBuffer.hpp"
+
+#include <OpenGL/Shader.hpp>
+#include <OpenGL/VertexArray.hpp>
+#include <OpenGL/VertexBuffer.hpp>
 
 class DemoApp : public ogld::Application
 {
@@ -32,7 +33,6 @@ protected:
 #else
     bool AppClosed() override { return true; }
 #endif
-
 private:
     ogld::Shader mShader{};
     ogld::VertexArray mVAO{};

@@ -3,14 +3,13 @@
 // Copyright (c) 2021 Oneiro Games. All rights reserved.
 //
 
-#include <iostream>
-
 #include "Texture.hpp"
+#include "OpenGL/gl_core_4_5.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 
-#include "OpenGL/gl_core_4_5.hpp"
+#include <iostream>
 
 ogld::Texture::Texture()
 {
@@ -22,11 +21,12 @@ void ogld::Texture::Load(const std::string& path)
     gl::GenTextures(1, &mID);
 
     int width, height, nrChannels;
-    unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+    uint8_t* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
     if (data)
     {
         Bind();
-        gl::TexImage2D(gl::TEXTURE_2D, 0, nrChannels == 4 ? gl::SRGB_ALPHA : gl::SRGB, width, height, 0, nrChannels == 4 ? gl::RGBA : gl::RGB, gl::UNSIGNED_BYTE, data);
+        gl::TexImage2D(gl::TEXTURE_2D, 0, nrChannels == 4 ? gl::SRGB_ALPHA : gl::SRGB,
+                       width, height, 0, nrChannels == 4 ? gl::RGBA : gl::RGB, gl::UNSIGNED_BYTE, data);
         gl::GenerateMipmap(gl::TEXTURE_2D);
 
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT);
@@ -37,7 +37,7 @@ void ogld::Texture::Load(const std::string& path)
     }
     else
     {
-        std::cout << "Failed to load texture" << std::endl;
+        std::cerr << "[OGLD]: Failed to load texture at " << path << " path!\n";
     }
     stbi_image_free(data);
 }

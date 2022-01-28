@@ -18,11 +18,14 @@ bool DemoApp::AppPreInit()
 
 bool DemoApp::AppInit()
 {
+    gl::CullFace(gl::BACK);
+    gl::FrontFace(gl::CCW);
+
     mShader.LoadFromFile("Shaders/shader.glsl");
     mDepthShader.LoadFromFile("Shaders/shadow_mapping.glsl");
 
-    mTerrain.Init("Textures/terrain_diffuse.jpg");
     mCube.Init("Textures/box_wood_diffuse.png", "Textures/box_wood_specular.png");
+    mTerrain.Init("Textures/terrain_diffuse.jpg");
 
     mDepthMap.Create(1024);
     mDepthFBO.Create(mDepthMap.GetID());
@@ -70,11 +73,15 @@ bool DemoApp::AppUpdate()
     renderScene(mDepthShader);
     mDepthFBO.UnBind();
 
+    gl::Enable(gl::CULL_FACE);
+
     gl::Viewport(0, 0, properties.width, properties.height);
     gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
     mShader.Use();
     mDepthMap.Bind();
     renderScene(mShader);
+
+    gl::Disable(gl::CULL_FACE);
 
 #ifdef OGLD_DEBUG
     ASSERT(ogld::ErrorHandler::GLLogCall());
@@ -108,7 +115,7 @@ void DemoApp::renderScene(ogld::Shader& shader)
 
 void CubeEntity::Init(const std::string& difPath, const std::string& specPath)
 {
-    constexpr float vertices[] = {
+    constexpr const float vertices[] = {
            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f,
             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f,
             1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f,
@@ -151,6 +158,7 @@ void CubeEntity::Init(const std::string& difPath, const std::string& specPath)
            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f,
            -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f
     };
+
     mVAO.Init();
     mVAO.Bind();
     mVBO.Create(sizeof(vertices), vertices);
@@ -176,7 +184,7 @@ void CubeEntity::Draw()
 
 void TerrainEntity::Init(const std::string& difPath)
 {
-    constexpr float vertices[] = {
+    constexpr const float vertices[] = {
             25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,  25.0f,  0.0f,
            -25.0f, -0.5f,  25.0f,  0.0f, 1.0f, 0.0f,   0.0f,  0.0f,
            -25.0f, -0.5f, -25.0f,  0.0f, 1.0f, 0.0f,   0.0f, 25.0f,

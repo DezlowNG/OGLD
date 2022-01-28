@@ -62,7 +62,7 @@ void ogld::Shader::LoadFromFile(const char* shaderPath)
     }
     catch (const std::exception& ex)
     {
-        std::cerr << ex.what() << std::endl;
+        std::cerr << "[OGLD]: Failed to load shader file! Error: " << ex.what() << '\n';
     }
 
     uint32_t vertexShader = CreateVertexShader(vertexShaderSrc.c_str());

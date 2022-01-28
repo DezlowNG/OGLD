@@ -48,7 +48,7 @@ ogld::Application::~Application()
 void ogld::Application::Run()
 {
     if (!AppPreInit())
-        throw std::runtime_error("OGLD: Failed to call AppPreInit function! Please, check your code for errors!");
+        throw std::runtime_error("[OGLD]: Failed to call AppPreInit function! Please, check your code for errors!");
 
     glfwInit();
 
@@ -64,7 +64,7 @@ void ogld::Application::Run()
     {
         glfwDestroyWindow(mWindow);
         glfwTerminate();
-        throw std::runtime_error("OGLD: Failed to create window!");
+        throw std::runtime_error("[OGLD]: Failed to create window!");
     }
 
     glfwMakeContextCurrent(mWindow);
@@ -72,13 +72,9 @@ void ogld::Application::Run()
 
     gl::Enable(gl::DEPTH_TEST);
     if (properties.msaa.enabled) gl::Enable(gl::MULTISAMPLE);
-    gl::DepthFunc(gl::LESS);
-    gl::Enable(gl::CULL_FACE);
-    gl::CullFace(gl::BACK);
-    gl::FrontFace(gl::CCW);
 
     if (!AppInit())
-        throw std::runtime_error("OGLD: Failed to call AppInit function! Please, check your code for errors!");
+        throw std::runtime_error("[OGLD]: Failed to call AppInit function! Please, check your code for errors!");
 #ifdef _DEBUG
     GLint GLVerMajor, GLVerMinor;
     gl::GetIntegerv(gl::MAJOR_VERSION, &GLVerMajor);
@@ -99,7 +95,7 @@ void ogld::Application::Run()
     glfwSetKeyCallback(mWindow, Application::KeyCallback);
 
     if (!MainLoop())
-        throw std::runtime_error("OGLD: Failed to call AppUpdate function! Please, check your code for errors!");
+        throw std::runtime_error("[OGLD]: Failed to call AppUpdate function! Please, check your code for errors!");
 
     AppClosed();
 }

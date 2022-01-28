@@ -18,6 +18,10 @@ bool DemoApp::AppPreInit()
 
 bool DemoApp::AppInit()
 {
+    gl::Enable(gl::CULL_FACE);
+    gl::CullFace(gl::BACK);
+    gl::FrontFace(gl::CCW);
+
     mShader.LoadFromFile("Shaders/shader.glsl");
     mCube.Init();
     return true;
@@ -46,7 +50,7 @@ bool DemoApp::AppUpdate()
 
 void CubeEntity::Init()
 {
-    constexpr float vertices[] = {
+    constexpr const float vertices[] = {
            -1.0f, -1.0f, -1.0f,
             1.0f,  1.0f, -1.0f,
             1.0f, -1.0f, -1.0f,
@@ -89,6 +93,7 @@ void CubeEntity::Init()
            -1.0f,  1.0f, -1.0f,
            -1.0f,  1.0f,  1.0f
     };
+
     mVAO.Init();
     mVAO.Bind();
     mVBO.Create(sizeof(vertices), vertices);

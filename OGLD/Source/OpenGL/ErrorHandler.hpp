@@ -26,7 +26,7 @@ namespace ogld
         {
             while (GLenum error = gl::GetError())
             {
-                std::cout << "[OGL ERROR] (" << error << " )\n";
+                std::cout << "[OGLD] OpenGL Error: (" << error << " )\n";
                 return false;
             }
             return true;
