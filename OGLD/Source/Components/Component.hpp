@@ -38,8 +38,8 @@ namespace ogld
     protected:
         glm::vec3 mPosition{1.0f};
         glm::vec3 mRotation{0.0f};
-        float mRotationAngle{0.0f};
         glm::vec3 mScale{1.0f};
+        float mRotationAngle{0.0f};
     };
 }
 

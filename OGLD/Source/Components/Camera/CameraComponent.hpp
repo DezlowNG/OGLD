@@ -25,21 +25,19 @@ namespace ogld
         void mouse_callback(float xpos, float ypos);
         glm::mat4 GetViewMatrix() const { return glm::lookAt(mPosition, mPosition + mFront, mUp); }
     private:
+        void updateCameraVectors();
+
         glm::vec3 mFront{};
         glm::vec3 mUp{};
         glm::vec3 mRight{};
         glm::vec3 mWorldUp{};
-        bool mFirstMouse = 1;
         float mLastX{};
         float mLastY{};
-
         float mYaw{};
         float mPitch{};
-
         float mMovementSpeed{};
         float mMouseSensitivity{};
-
-        void updateCameraVectors();
+        bool mFirstMouse = 1;
     };
 }
 #endif //OGLD_CAMERA_HPP

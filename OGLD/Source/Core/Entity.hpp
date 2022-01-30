@@ -19,7 +19,6 @@ namespace ogld
 {
     class Entity : public Component
     {
-    private:
         struct TexturesStruct
         {
             Texture diffuse{};
@@ -29,9 +28,9 @@ namespace ogld
     public:
         virtual void Draw() = 0;
     protected:
+        TexturesStruct mTextures{};
         VertexArray mVAO{};
         VertexBuffer mVBO{};
-        TexturesStruct mTextures{};
     };
 }
 

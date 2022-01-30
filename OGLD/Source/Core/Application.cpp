@@ -6,9 +6,12 @@
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
+#include <OpenGL/VertexArray.hpp>
+#include <OpenGL/VertexBuffer.hpp>
+#include <OpenGL/Texture.hpp>
 #include "Application.hpp"
 
-ogld::Application::ApplicationProperties ogld::Application::properties{};
+ogld::Application::AppProps ogld::Application::properties{};
 
 bool ogld::Application::MainLoop()
 {

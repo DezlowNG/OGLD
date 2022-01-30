@@ -20,7 +20,7 @@ namespace ogld
 {
     class Application
     {
-        struct ApplicationProperties
+        struct AppProps
         {
             const char* title = "OGLD";
             uint16_t width = 1280;
@@ -43,14 +43,14 @@ namespace ogld
         {
             double lastFrame = 0.0;
             double currentFrame = 0.0;
-            double delta = 0.0;
+            float delta = 0.0;
         };
 
         struct FPSStruct
         {
-            double fps = 0.0;
+            float fps = 0.0;
             double prevTime = 0.0;
-            uint32_t frames = 0;
+            size_t frames = 0;
         };
     public:
         Application() = default;
@@ -63,25 +63,23 @@ namespace ogld
         virtual bool AppUpdate() = 0;
         virtual bool AppClosed() = 0;
 
-        static ApplicationProperties properties;
-
-        double GetDelta() const { return mDeltaTime.delta; }
+        float GetDelta() const { return mDeltaTime.delta; }
         GLFWwindow* GetWindow() { return mWindow; }
         const Camera* GetCamera() { return &mAppCamera; }
     private:
+        bool MainLoop();
+        void CalculateFPS();
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
         static void MouseCallback(GLFWwindow* window, double xpos, double ypos);
         static void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-        GLFWwindow* mWindow{};
-        DTSturct mDeltaTime;
-        FPSStruct mFPS;
-
-        Camera mAppCamera;
-
-        void CalculateFPS();
-
-        bool MainLoop();
+        Camera mAppCamera{}; // 116 bytes
+        DTSturct mDeltaTime{}; // 24 bytes
+        FPSStruct mFPS{}; // 24 bytes
+    protected:
+        static AppProps properties; // 16 bytes
+    private:
+        GLFWwindow* mWindow{}; // 8 bytes
     };
 
     std::shared_ptr<Application> CreateApplication();
