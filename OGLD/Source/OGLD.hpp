@@ -39,6 +39,8 @@
                       688860
 */
 
+#pragma once
+
 #ifndef OGLD_HPP
 #define OGLD_HPP
 

@@ -1,0 +1,15 @@
+//
+// Created by Dezlow on 01.02.2022.
+// Copyright (c) 2022 Oneiro Games. All rights reserved.
+//
+
+#pragma once
+
+#ifndef OGLD_CONFIG_HPP
+#define OGLD_CONFIG_HPP
+
+#define OGLD_USE_IMGUI ${OGLD_USE_IMGUI}
+#define OGLD_GL_VERSION_MAJOR ${OGLD_GL_VERSION_MAJOR}
+#define OGLD_GL_VERSION_MINOR ${OGLD_GL_VERSION_MINOR}
+
+#endif //OGLD_CONFIG_HPP

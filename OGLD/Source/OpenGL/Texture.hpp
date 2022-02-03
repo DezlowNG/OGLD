@@ -18,7 +18,7 @@ namespace ogld
         Texture();
         ~Texture();
 
-        void Load(const std::string& path);
+        void Load(const std::string& path, bool srgb = true);
         void Bind() const;
         void Bind(size_t index) const;
         void UnBind() const;

@@ -6,16 +6,19 @@
 #include <stdexcept>
 #include <sstream>
 #include <iostream>
-#include <OpenGL/VertexArray.hpp>
-#include <OpenGL/VertexBuffer.hpp>
-#include <OpenGL/Texture.hpp>
 #include "Application.hpp"
+
+#if OGLD_USE_IMGUI
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
+#endif
 
 ogld::Application::AppProps ogld::Application::properties{};
 
 bool ogld::Application::MainLoop()
 {
-    mFPS.prevTime = glfwGetTime();
+    if (properties.framerate.show)
+        mFPS.prevTime = glfwGetTime();
 
     while (!glfwWindowShouldClose(mWindow))
     {
@@ -28,14 +31,27 @@ bool ogld::Application::MainLoop()
         mDeltaTime.delta = mDeltaTime.currentFrame - mDeltaTime.lastFrame;
         mDeltaTime.lastFrame = mDeltaTime.currentFrame;
 
-        mFPS.frames++;
-        if (mDeltaTime.currentFrame - mFPS.prevTime >= 1.0)
-            CalculateFPS();
+        if (properties.framerate.show)
+        {
+            mFPS.frames++;
+            if (mDeltaTime.currentFrame - mFPS.prevTime >= 1.0)
+                CalculateFPS();
+        }
 
         mAppCamera.keyboard_callback(mWindow, mDeltaTime.delta);
 
         if (!AppUpdate()) return false;
 
+#if OGLD_USE_IMGUI
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImUpdate();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
         glfwSwapBuffers(mWindow);
     }
 
@@ -55,13 +71,17 @@ void ogld::Application::Run()
 
     glfwInit();
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OGLD_GL_VERSION_MAJOR);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OGLD_GL_VERSION_MINOR);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     if (properties.msaa.enabled)
         glfwWindowHint(GLFW_SAMPLES, properties.msaa.level);
 
-    mWindow = glfwCreateWindow(properties.width, properties.height, std::string(properties.title + std::string(" | FPS: 0")).c_str(), nullptr, nullptr);
+    if (properties.framerate.show) {
+        mWindow = glfwCreateWindow(properties.width, properties.height, (std::string(properties.title) + std::string(" | FPS: 0")).c_str(), nullptr, nullptr);
+    } else {
+        mWindow = glfwCreateWindow(properties.width, properties.height, properties.title, nullptr, nullptr);
+    }
 
     if (mWindow == nullptr)
     {
@@ -78,7 +98,7 @@ void ogld::Application::Run()
 
     if (!AppInit())
         throw std::runtime_error("[OGLD]: Failed to call AppInit function! Please, check your code for errors!");
-#ifdef _DEBUG
+#ifdef OGLD_DEBUG
     GLint GLVerMajor, GLVerMinor;
     gl::GetIntegerv(gl::MAJOR_VERSION, &GLVerMajor);
     gl::GetIntegerv(gl::MINOR_VERSION, &GLVerMinor);
@@ -86,6 +106,18 @@ void ogld::Application::Run()
     std::cout << "GPU: " << gl::GetString(gl::RENDERER) << '\n';
     std::cout << "OpenGL Version: " << GLVerMajor << "." << GLVerMinor << '\n';
     std::cout << "GLSL Version: " << gl::GetString(gl::SHADING_LANGUAGE_VERSION) << '\n';
+#endif
+
+#if OGLD_USE_IMGUI
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+
+    ImGui_ImplGlfw_InitForOpenGL(mWindow, true);
+    std::string glVersion = "#version " + std::to_string(OGLD_GL_VERSION_MAJOR) + std::to_string(OGLD_GL_VERSION_MINOR) + "0";
+    ImGui_ImplOpenGL3_Init(glVersion.c_str());
+    ImInit();
+    glVersion.clear();
 #endif
 
     if (properties.camera.enabled)
@@ -101,6 +133,12 @@ void ogld::Application::Run()
         throw std::runtime_error("[OGLD]: Failed to call AppUpdate function! Please, check your code for errors!");
 
     AppClosed();
+#if OGLD_USE_IMGUI
+    ImClosed();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+#endif
 }
 
 void ogld::Application::CalculateFPS()

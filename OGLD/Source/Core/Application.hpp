@@ -16,16 +16,14 @@
 
 #include <memory>
 
+#include "Core/Config.hpp"
+
 namespace ogld
 {
     class Application
     {
         struct AppProps
         {
-            const char* title = "OGLD";
-            uint16_t width = 1280;
-            uint16_t height = 720;
-            uint8_t vsync = 1;
             struct CameraProps
             {
                 bool enabled = false;
@@ -35,8 +33,17 @@ namespace ogld
                 bool enabled = true;
                 uint8_t level = 8;
             };
+            struct FPSProps
+            {
+                bool show = true;
+            };
+            const char* title = "OGLD";
+            uint16_t width = 1280;
+            uint16_t height = 720;
+            uint8_t vsync = 1;
             MSAAProps msaa;
             CameraProps camera;
+            FPSProps framerate;
         };
 
         struct DTSturct
@@ -62,8 +69,12 @@ namespace ogld
         virtual bool AppInit() = 0;
         virtual bool AppUpdate() = 0;
         virtual bool AppClosed() = 0;
-
-        float GetDelta() const { return mDeltaTime.delta; }
+#if OGLD_USE_IMGUI
+        virtual void ImInit() = 0;
+        virtual void ImUpdate() = 0;
+        virtual void ImClosed() = 0;
+#endif
+        [[nodiscard]] float GetDelta() const { return mDeltaTime.delta; }
         GLFWwindow* GetWindow() { return mWindow; }
         const Camera* GetCamera() { return &mAppCamera; }
     private:

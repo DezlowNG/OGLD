@@ -4,6 +4,11 @@
 //
 
 #include "MainApp.hpp"
+#if OGLD_USE_IMGUI
+#include "ImGui/imgui.h"
+#endif
+
+
 
 bool DemoApp::AppPreInit()
 {
@@ -12,6 +17,7 @@ bool DemoApp::AppPreInit()
     properties.msaa.enabled = true;
     properties.msaa.level = 2;
     properties.camera.enabled = true;
+    properties.framerate.show = false;
 
     return true;
 }
@@ -52,8 +58,8 @@ bool DemoApp::AppUpdate()
     mLightPos.z = cos(glfwGetTime()) * 2.0f;
     mLightPos.y = 5.0 + cos(glfwGetTime()) * 1.0f;
 
-    glm::mat4 lightProjection, lightView;
-    glm::mat4 lightSpaceMatrix;
+    glm::mat4 lightProjection{}, lightView{};
+    glm::mat4 lightSpaceMatrix{};
     lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
     lightView = glm::lookAt(mLightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
     lightSpaceMatrix = lightProjection * lightView;
@@ -112,6 +118,24 @@ void DemoApp::renderScene(ogld::Shader& shader)
     shader.SetUniform("model", mCube.SetUpModel(model, true));
     mCube.Draw();
 }
+
+#if OGLD_USE_IMGUI
+void DemoApp::ImUpdate()
+{
+    ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+                                 | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse
+                                 | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoSavedSettings
+                                 | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar
+                                 );
+    ImGui::SetWindowSize(ImVec2(350, 50));
+    ImGui::SetWindowPos(ImVec2(0, 0));
+    ImGui::Text("FPS: %.ffps", ImGui::GetIO().Framerate);
+    ImGui::Text("Delta: %fms", GetDelta());
+    ImGui::End();
+}
+void DemoApp::ImInit() {}
+void DemoApp::ImClosed() {}
+#endif
 
 void CubeEntity::Init(const std::string& difPath, const std::string& specPath)
 {

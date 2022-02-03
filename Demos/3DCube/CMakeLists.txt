@@ -22,7 +22,6 @@ include_directories(../../OGLD/Source/)
 
 file(GLOB SOURCE_FILES
         "Source/3DCubeApp.cpp"
-        "Source/3DCubeApp.hpp"
         )
 
 add_executable(${CMAKE_PROJECT_NAME}

@@ -4,6 +4,7 @@ project(OGLD_MAIN)
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_BINARY_DIR "${PROJECT_SOURCE_DIR}/../../bin/${CMAKE_SYSTEM_NAME}/${CMAKE_PROJECT_NAME}/${CMAKE_BUILD_TYPE}-${CMAKE_SYSTEM_PROCESSOR}")
+set(OGLD_USE_IMGUI ON)
 
 file(GLOB SHADERFILES "Shaders/*.glsl")
 file(GLOB TEXTUREFILES "Textures/*.jpg" "Textures/*.png")
@@ -24,8 +25,12 @@ include_directories(../../OGLD/Source/)
 
 file(GLOB SOURCE_FILES
         "Source/MainApp.cpp"
-        "Source/MainApp.hpp"
         )
+
+set (VERSION_MAJOR 0)
+set (VERSION_MINOR 1)
+set (VERSION_PATCH 0)
+set (SOFT_VERSION $ {VERSION_MAJOR}. $ {VERSION_MINOR}. $ {VERSION_PATCH})
 
 add_executable(${CMAKE_PROJECT_NAME}
         ${SOURCE_FILES}

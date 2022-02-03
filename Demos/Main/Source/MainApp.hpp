@@ -38,6 +38,7 @@ protected:
     bool AppPreInit() override;
     bool AppInit() override;
     bool AppUpdate() override;
+
 #ifdef OGLD_TRACK_MEMORY
     bool AppClosed() override
     {
@@ -47,7 +48,9 @@ protected:
 #else
     bool AppClosed() override { return true; }
 #endif
-
+    void ImInit() override;
+    void ImUpdate() override;
+    void ImClosed() override;
 private:
     void renderScene(ogld::Shader& shader);
     ogld::Shader mShader{};

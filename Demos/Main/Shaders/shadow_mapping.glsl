@@ -1,5 +1,5 @@
 // TYPE=VERTEX
-#version 460 core
+#version 330 core
 layout (location = 0) in vec3 aPos;
 
 uniform mat4 lightSpaceMatrix;
@@ -11,7 +11,7 @@ void main()
 }
 
 // TYPE=FRAGMENT
-#version 460 core
+#version 330 core
 void main()
 {
     // gl_FragDepth = gl_FragCoord.z;

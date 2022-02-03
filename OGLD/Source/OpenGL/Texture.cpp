@@ -16,7 +16,7 @@ ogld::Texture::Texture()
     stbi_set_flip_vertically_on_load(1);
 }
 
-void ogld::Texture::Load(const std::string& path)
+void ogld::Texture::Load(const std::string& path, bool srgb)
 {
     gl::GenTextures(1, &mID);
 
@@ -25,13 +25,19 @@ void ogld::Texture::Load(const std::string& path)
     if (data)
     {
         Bind();
-        gl::TexImage2D(gl::TEXTURE_2D, 0, nrChannels == 4 ? gl::SRGB_ALPHA : gl::SRGB,
-                       width, height, 0, nrChannels == 4 ? gl::RGBA : gl::RGB, gl::UNSIGNED_BYTE, data);
+        if (srgb)
+        {
+            gl::TexImage2D(gl::TEXTURE_2D, 0, nrChannels == 4 ? gl::SRGB_ALPHA : gl::SRGB,
+                           width, height, 0, nrChannels == 4 ? gl::RGBA : gl::RGB, gl::UNSIGNED_BYTE, data);
+        }
+        else
+        {
+            gl::TexImage2D(gl::TEXTURE_2D, 0, nrChannels == 4 ? gl::RGBA : gl::RGB,
+                           width, height, 0, nrChannels == 4 ? gl::RGBA : gl::RGB, gl::UNSIGNED_BYTE, data);
+        }
         gl::GenerateMipmap(gl::TEXTURE_2D);
-
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT);
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT);
-
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR);
     }
