@@ -6,3 +6,4 @@ Demos/*/cmake-build-release/
 
 OGLD/cmake-build-debug/
 OGLD/cmake-build-release/
+OGLD/Source/Core/Config.hpp
