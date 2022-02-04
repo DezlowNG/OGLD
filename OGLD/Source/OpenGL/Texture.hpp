@@ -14,15 +14,24 @@ namespace ogld
 {
     class Texture
     {
+        struct TextureData
+        {
+            int width{};
+            int height{};
+            int nrChannels{};
+        };
     public:
         Texture();
         ~Texture();
 
-        void Load(const std::string& path, bool srgb = true);
+        void Load(const std::string& path, bool srgb = true, bool repeat = true);
         void Bind() const;
         void Bind(size_t index) const;
         void UnBind() const;
+
+        [[nodiscard]] const TextureData& GetData() const { return mData; }
     private:
+        TextureData mData{};
         uint32_t mID{};
     };
 }

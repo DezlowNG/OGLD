@@ -40,7 +40,8 @@ private:
     ogld::VertexArray mVAO{};
     ogld::VertexBuffer mVBO{};
     ogld::IndexBuffer mEBO{};
-    ogld::Texture mTexture{};
+    ogld::Texture mBackground{};
+    ogld::Texture mSprite{};
 };
 
 std::shared_ptr<ogld::Application> ogld::CreateApplication()

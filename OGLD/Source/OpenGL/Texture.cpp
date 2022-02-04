@@ -16,28 +16,27 @@ ogld::Texture::Texture()
     stbi_set_flip_vertically_on_load(1);
 }
 
-void ogld::Texture::Load(const std::string& path, bool srgb)
+void ogld::Texture::Load(const std::string& path, bool srgb, bool repeat)
 {
     gl::GenTextures(1, &mID);
 
-    int width, height, nrChannels;
-    uint8_t* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+    uint8_t* data = stbi_load(path.c_str(), &mData.width, &mData.height, &mData.nrChannels, 0);
     if (data)
     {
         Bind();
         if (srgb)
         {
-            gl::TexImage2D(gl::TEXTURE_2D, 0, nrChannels == 4 ? gl::SRGB_ALPHA : gl::SRGB,
-                           width, height, 0, nrChannels == 4 ? gl::RGBA : gl::RGB, gl::UNSIGNED_BYTE, data);
+            gl::TexImage2D(gl::TEXTURE_2D, 0, mData.nrChannels == 4 ? gl::SRGB_ALPHA : gl::SRGB,
+                           mData.width, mData.height, 0, mData.nrChannels == 4 ? gl::RGBA : gl::RGB, gl::UNSIGNED_BYTE, data);
         }
         else
         {
-            gl::TexImage2D(gl::TEXTURE_2D, 0, nrChannels == 4 ? gl::RGBA : gl::RGB,
-                           width, height, 0, nrChannels == 4 ? gl::RGBA : gl::RGB, gl::UNSIGNED_BYTE, data);
+            gl::TexImage2D(gl::TEXTURE_2D, 0, mData.nrChannels == 4 ? gl::RGBA : gl::RGB,
+                           mData.width, mData.height, 0, mData.nrChannels == 4 ? gl::RGBA : gl::RGB, gl::UNSIGNED_BYTE, data);
         }
         gl::GenerateMipmap(gl::TEXTURE_2D);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::REPEAT);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::REPEAT);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, repeat ? gl::REPEAT : gl::CLAMP_TO_BORDER);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, repeat ? gl::REPEAT : gl::CLAMP_TO_BORDER);
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR);
     }
