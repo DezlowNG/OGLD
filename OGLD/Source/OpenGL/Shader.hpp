@@ -23,6 +23,8 @@ namespace ogld
         void Use() const;
         void LoadFromFile(const char* shaderPath);
 
+        void BindUniformBlock(const char* name) const;
+
         void SetUniform(const char* uname, float uvalue);
         void SetUniform(const char* uname, int uvalue);
         void SetUniform(const char* uname, const glm::vec3& uvalue);

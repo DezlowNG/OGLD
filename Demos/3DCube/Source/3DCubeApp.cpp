@@ -24,6 +24,9 @@ bool DemoApp::AppInit()
 
     mShader.LoadFromFile("Shaders/shader.glsl");
     mCube.Init();
+    UBO.Init(2 * sizeof(glm::mat4));
+    UBO.PushBufferRange(0, 0, 2 * sizeof(glm::mat4));
+    mShader.BindUniformBlock("Matrices");
     return true;
 }
 
@@ -33,11 +36,11 @@ bool DemoApp::AppUpdate()
     ogld::ErrorHandler::GLClearError();
 #endif
     mShader.Use();
-    mShader.SetUniform("projection", glm::perspective(glm::radians(90.0f),
-                                                      (float)properties.width / (float)properties.height,
-                                                      0.1f, 100.0f));
-    mShader.SetUniform("view", GetCamera()->GetViewMatrix());
-
+    UBO.Bind();
+    UBO.PushData(0, sizeof(glm::mat4), glm::perspective(glm::radians(90.0f),
+                                                        (float)properties.width / (float)properties.height,
+                                                        0.1f, 100.0f));
+    UBO.PushData(sizeof(glm::mat4), sizeof(glm::mat4), GetCamera()->GetViewMatrix());
     glm::mat4 model{1.0f};
     mShader.SetUniform("model", mCube.SetUpModel(model));
     mCube.Draw();

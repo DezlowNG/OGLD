@@ -17,6 +17,7 @@
 #include <OpenGL/DepthFBO.hpp>
 #include <OpenGL/Shader.hpp>
 #include <Core/Entity.hpp>
+#include "OpenGL/UniformBuffer.hpp"
 
 class CubeEntity : public ogld::Entity
 {
@@ -45,6 +46,7 @@ private:
     void renderScene(ogld::Shader& shader);
     ogld::Shader mShader{};
     CubeEntity mCube{};
+    ogld::UniformBuffer UBO{};
 };
 
 std::shared_ptr<ogld::Application> ogld::CreateApplication()
