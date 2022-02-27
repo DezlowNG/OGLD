@@ -27,11 +27,6 @@ file(GLOB SOURCE_FILES
         "Source/MainApp.cpp"
         )
 
-set (VERSION_MAJOR 0)
-set (VERSION_MINOR 1)
-set (VERSION_PATCH 0)
-set (SOFT_VERSION $ {VERSION_MAJOR}. $ {VERSION_MINOR}. $ {VERSION_PATCH})
-
 add_executable(${CMAKE_PROJECT_NAME}
         ${SOURCE_FILES}
         )

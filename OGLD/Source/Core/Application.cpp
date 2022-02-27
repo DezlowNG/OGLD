@@ -53,6 +53,8 @@ bool ogld::Application::MainLoop()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #endif
         glfwSwapBuffers(mWindow);
+
+        input.active = false;
     }
 
     return true;
@@ -154,6 +156,10 @@ void ogld::Application::CalculateFPS()
 
 void ogld::Application::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
+    auto* app = reinterpret_cast<ogld::Application*>(glfwGetWindowUserPointer(window));
+    app->input.key = key;
+    app->input.action = action;
+    app->input.active = true;
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, 1);

@@ -8,11 +8,19 @@ out vec3 FragPos;
 out vec3 Normal;
 out vec2 TexCoords;
 out vec4 FragPosLightSpace;
+out vec4 MVP;
 
-uniform mat4 projection;
-uniform mat4 view;
+layout (std140) uniform Matrices
+{
+    mat4 projection;
+    mat4 view;
+    mat4 lightSpaceMatrix;
+};
+
 uniform mat4 model;
-uniform mat4 lightSpaceMatrix;
+
+uniform bool uDrawShadows;
+uniform bool uDrawFog;
 
 void main()
  {
@@ -20,20 +28,24 @@ void main()
      Normal = transpose(inverse(mat3(model))) * aNormal;
      TexCoords = aTexCoords;
      FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0);
-     gl_Position = projection * view * model * vec4(aPos, 1.0);
+     MVP = view * model * vec4(aPos, 1.0);
+
+     gl_Position = projection * MVP;
  }
 
 // TYPE=FRAGMENT
 #version 330 core
 out vec4 FragColor;
 
-struct Material {
+struct Material
+{
     sampler2D diffuse;
     sampler2D specular;
     float shininess;
 };
 
-struct Light {
+struct Light
+{
     vec3 position;
 
     vec3 ambient;
@@ -41,15 +53,22 @@ struct Light {
     vec3 specular;
 };
 
+const float fog_maxdist = 15.0;
+const float fog_mindist = 2.0;
+
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
 in vec4 FragPosLightSpace;
+in vec4 MVP;
 
 uniform vec3 viewPos;
 uniform Material material;
 uniform Light light;
 uniform sampler2D shadowMap;
+
+uniform bool uDrawShadows;
+uniform bool uDrawFog;
 
 float ShadowCalculation(vec4 fragPosLightSpace)
 {
@@ -63,17 +82,17 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    for(int x = -1; x <= 1; ++x)
-    {
-        for(int y = -1; y <= 1; ++y)
+        for(int x = -1; x <= 1; ++x)
         {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += currentDepth - bias > pcfDepth  ? 1.0 : 0.0;
+            for(int y = -1; y <= 1; ++y)
+            {
+                float pcfDepth = !uDrawShadows ? 1.0 : texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+                shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+            }
         }
-    }
-    shadow /= 9.0;
-    if(projCoords.z > 1.0)
-        shadow = 0.0;
+        shadow /= 9.0;
+        if(projCoords.z > 1.0)
+            shadow = 0.0;
 
     return shadow;
 }
@@ -89,14 +108,38 @@ void main()
     vec3 diffuse = diff * lightColor;
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
-    float spec = 0.0;
     vec3 halfwayDir = normalize(lightDir + viewDir);
-    spec = pow(max(dot(normal, halfwayDir), 0.0), 64.0);
+    float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
     vec3 specular = vec3(1.0) * spec * texture(material.specular, TexCoords).rgb;
-    float shadow = ShadowCalculation(FragPosLightSpace);
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
+
+    vec3 lighting;
+    if (uDrawShadows)
+    {
+        float shadow = ShadowCalculation(FragPosLightSpace);
+        lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
+    }
+    else
+    {
+        float shadow = ShadowCalculation(FragPosLightSpace);
+        lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
+    }
 
     lighting = lighting / (lighting + vec3(1.0));
     lighting = pow(lighting, vec3(1.0/2.2));
-    FragColor = vec4(lighting, 1.0);
+
+    if (uDrawFog)
+    {
+        vec4  fog_colour = vec4(0.4, 0.4, 0.4, 1.0);
+
+        float dist = length(MVP.xyz);
+        float fog_factor = (fog_maxdist - dist) /
+                          (fog_maxdist - fog_mindist);
+        fog_factor = clamp(fog_factor, 0.0, 1.0);
+
+        FragColor = mix(fog_colour, vec4(lighting, 1.0), fog_factor);
+    }
+    else
+    {
+        FragColor = vec4(lighting, 1.0);
+    }
 }

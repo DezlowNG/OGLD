@@ -8,8 +8,6 @@
 #include "ImGui/imgui.h"
 #endif
 
-
-
 bool DemoApp::AppPreInit()
 {
     properties.vsync = 0;
@@ -41,6 +39,10 @@ bool DemoApp::AppInit()
     mShader.SetUniform("material.diffuse", 1);
     mShader.SetUniform("material.specular", 2);
 
+    mUBO.Init(3 * sizeof(glm::mat4));
+    mUBO.PushBufferRange(0, 0, 3 * sizeof(glm::mat4));
+    mShader.BindUniformBlock("Matrices");
+
     return true;
 }
 
@@ -49,6 +51,14 @@ bool DemoApp::AppUpdate()
 #ifdef OGLD_DEBUG
     ogld::ErrorHandler::GLClearError();
 #endif
+    if (input.active)
+    {
+        if (input.key == GLFW_KEY_T && input.action == GLFW_PRESS)
+            DrawFog = !DrawFog;
+        if (input.key == GLFW_KEY_Y && input.action == GLFW_PRESS)
+            DrawShadows = !DrawShadows;
+    }
+
     glm::mat4 view = GetCamera()->GetViewMatrix();
     glm::mat4 projection = glm::perspective(glm::radians(90.0f),
                                             (float)properties.width / (float)properties.height,
@@ -60,34 +70,48 @@ bool DemoApp::AppUpdate()
 
     glm::mat4 lightProjection{}, lightView{};
     glm::mat4 lightSpaceMatrix{};
-    lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
-    lightView = glm::lookAt(mLightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
-    lightSpaceMatrix = lightProjection * lightView;
+
+    if (DrawShadows)
+    {
+        lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
+        lightView = glm::lookAt(mLightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+        lightSpaceMatrix = lightProjection * lightView;
+    }
 
     mShader.Use();
-    mShader.SetUniform("projection", projection);
-    mShader.SetUniform("view", view);
     mShader.SetUniform("viewPos", GetCamera()->GetPosition());
     mShader.SetUniform("light.position", mLightPos);
-    mShader.SetUniform("lightSpaceMatrix", lightSpaceMatrix);
-    mDepthShader.Use();
-    mDepthShader.SetUniform("lightSpaceMatrix", lightSpaceMatrix);
+    mShader.SetUniform("uDrawShadows", DrawShadows);
+    mShader.SetUniform("uDrawFog", DrawFog);
 
-    gl::Viewport(0, 0, 1024, 1024);
-    mDepthFBO.Bind();
-    gl::Clear(gl::DEPTH_BUFFER_BIT);
-    renderScene(mDepthShader);
-    mDepthFBO.UnBind();
+    mUBO.Bind();
+    mUBO.PushData(0, sizeof(glm::mat4), projection);
+    mUBO.PushData(sizeof(glm::mat4), sizeof(glm::mat4), view);
+    if (DrawShadows)
+    {
+        mUBO.PushData(2 * sizeof(glm::mat4), sizeof(glm::mat4), lightSpaceMatrix);
+        mDepthShader.Use();
+        mDepthShader.SetUniform("lightSpaceMatrix", lightSpaceMatrix);
+        gl::Viewport(0, 0, 1024, 1024);
+        mDepthFBO.Bind();
+        gl::Clear(gl::DEPTH_BUFFER_BIT);
+        renderScene(mDepthShader, false);
+        mDepthFBO.UnBind();
+        gl::Viewport(0, 0, properties.width, properties.height);
+    }
 
-    gl::Enable(gl::CULL_FACE);
+    if (DrawFog)
+        gl::ClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 
-    gl::Viewport(0, 0, properties.width, properties.height);
-    gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
     mShader.Use();
-    mDepthMap.Bind();
-    renderScene(mShader);
 
-    gl::Disable(gl::CULL_FACE);
+    if (DrawShadows)
+    {
+        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+        mDepthMap.Bind();
+    }
+
+    renderScene(mShader, true);
 
 #ifdef OGLD_DEBUG
     ASSERT(ogld::ErrorHandler::GLLogCall());
@@ -95,13 +119,13 @@ bool DemoApp::AppUpdate()
     return true;
 }
 
-void DemoApp::renderScene(ogld::Shader& shader)
+void DemoApp::renderScene(ogld::Shader& shader, bool cullface)
 {
-    gl::Disable(gl::CULL_FACE);
     glm::mat4 model{1.0f};
     shader.SetUniform("model", mTerrain.SetUpModel(model));
     mTerrain.Draw();
 
+    if (cullface) gl::Enable(gl::CULL_FACE);
     mCube.SetPosition(glm::vec3(0.0f, 1.5f, 0.0f));
     mCube.SetScale(glm::vec3(0.5f));
     shader.SetUniform("model", mCube.SetUpModel(model));
@@ -117,20 +141,22 @@ void DemoApp::renderScene(ogld::Shader& shader)
     mCube.SetRotation(glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
     shader.SetUniform("model", mCube.SetUpModel(model, true));
     mCube.Draw();
+    if (cullface) gl::Disable(gl::CULL_FACE);
 }
 
 #if OGLD_USE_IMGUI
 void DemoApp::ImUpdate()
 {
     ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
-                                 | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse
-                                 | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoSavedSettings
-                                 | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar
-                                 );
+            | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse
+            | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoSavedSettings
+            | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar
+    );
+
     ImGui::SetWindowSize(ImVec2(350, 50));
     ImGui::SetWindowPos(ImVec2(0, 0));
     ImGui::Text("FPS: %.ffps", ImGui::GetIO().Framerate);
-    ImGui::Text("Delta: %fms", GetDelta());
+    ImGui::Text("Delta: %.2fms", GetDelta() * 1000.0f);
     ImGui::End();
 }
 void DemoApp::ImInit() {}

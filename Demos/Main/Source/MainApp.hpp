@@ -16,6 +16,7 @@
 #include <OpenGL/DepthMap.hpp>
 #include <OpenGL/DepthFBO.hpp>
 #include <OpenGL/Shader.hpp>
+#include <OpenGL/UniformBuffer.hpp>
 #include <Core/Entity.hpp>
 
 class CubeEntity : public ogld::Entity
@@ -52,15 +53,18 @@ protected:
     void ImUpdate() override;
     void ImClosed() override;
 private:
-    void renderScene(ogld::Shader& shader);
+    void renderScene(ogld::Shader& shader, bool cullface);
     ogld::Shader mShader{};
     ogld::Shader mDepthShader{};
     ogld::DepthFBO mDepthFBO{};
     ogld::DepthMap mDepthMap{};
     CubeEntity mCube{};
     TerrainEntity mTerrain{};
-
+    ogld::UniformBuffer mUBO{};
     glm::vec3 mLightPos{-2.0f, 4.0f, -1.0f};
+
+    bool DrawFog{false};
+    bool DrawShadows{false};
 };
 
 std::shared_ptr<ogld::Application> ogld::CreateApplication()
