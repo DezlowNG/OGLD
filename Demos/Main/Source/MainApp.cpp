@@ -51,14 +51,6 @@ bool DemoApp::AppUpdate()
 #ifdef OGLD_DEBUG
     ogld::ErrorHandler::GLClearError();
 #endif
-    if (input.active)
-    {
-        if (input.key == GLFW_KEY_T && input.action == GLFW_PRESS)
-            DrawFog = !DrawFog;
-        if (input.key == GLFW_KEY_Y && input.action == GLFW_PRESS)
-            DrawShadows = !DrawShadows;
-    }
-
     glm::mat4 view = GetCamera()->GetViewMatrix();
     glm::mat4 projection = glm::perspective(glm::radians(90.0f),
                                             (float)properties.width / (float)properties.height,
@@ -82,7 +74,7 @@ bool DemoApp::AppUpdate()
     mShader.SetUniform("viewPos", GetCamera()->GetPosition());
     mShader.SetUniform("light.position", mLightPos);
     mShader.SetUniform("uDrawShadows", DrawShadows);
-    mShader.SetUniform("uDrawFog", DrawFog);
+    mShader.SetUniform("uDrawFog", mFog.draw);
 
     mUBO.Bind();
     mUBO.PushData(0, sizeof(glm::mat4), projection);
@@ -100,10 +92,18 @@ bool DemoApp::AppUpdate()
         gl::Viewport(0, 0, properties.width, properties.height);
     }
 
-    if (DrawFog)
-        gl::ClearColor(0.4f, 0.4f, 0.4f, 1.0f);
-
     mShader.Use();
+
+    if (mFog.draw && !mFog.set)
+    {
+        properties.bg = glm::vec4(0.4f, 0.4f, 0.4f, 1.0f);
+        mFog.set = true;
+    }
+    else if (!mFog.draw && !mFog.set)
+    {
+        properties.bg = glm::vec4(0.1f, 0.1f, 0.1f, 1.0f);
+        mFog.set = true;
+    }
 
     if (DrawShadows)
     {
@@ -161,6 +161,18 @@ void DemoApp::ImUpdate()
 }
 void DemoApp::ImInit() {}
 void DemoApp::ImClosed() {}
+
+void DemoApp::AppInput(int key, int action)
+{
+    if (key == GLFW_KEY_T && action == GLFW_PRESS)
+    {
+        mFog.set = false;
+        mFog.draw = !mFog.draw;
+    }
+    if (key == GLFW_KEY_Y && action == GLFW_PRESS)
+        DrawShadows = !DrawShadows;
+}
+
 #endif
 
 void CubeEntity::Init(const std::string& difPath, const std::string& specPath)

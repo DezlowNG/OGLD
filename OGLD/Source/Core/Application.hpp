@@ -44,6 +44,8 @@ namespace ogld
             MSAAProps msaa;
             CameraProps camera;
             FPSProps framerate;
+
+            glm::vec4 bg{0.1f, 0.1f, 0.1f, 1.0f};
         };
 
         struct DTSturct
@@ -69,6 +71,7 @@ namespace ogld
         virtual bool AppInit() = 0;
         virtual bool AppUpdate() = 0;
         virtual bool AppClosed() = 0;
+        virtual void AppInput(int key, int action) {}
 #if OGLD_USE_IMGUI
         virtual void ImInit() = 0;
         virtual void ImUpdate() = 0;

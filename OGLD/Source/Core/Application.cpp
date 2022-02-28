@@ -24,7 +24,7 @@ bool ogld::Application::MainLoop()
     {
         glfwPollEvents();
 
-        gl::ClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        gl::ClearColor(properties.bg[0], properties.bg[1], properties.bg[2], properties.bg[3]);
         gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
         mDeltaTime.currentFrame = glfwGetTime();
@@ -157,9 +157,7 @@ void ogld::Application::CalculateFPS()
 void ogld::Application::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     auto* app = reinterpret_cast<ogld::Application*>(glfwGetWindowUserPointer(window));
-    app->input.key = key;
-    app->input.action = action;
-    app->input.active = true;
+    app->AppInput(key, action);
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, 1);

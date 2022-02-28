@@ -39,6 +39,7 @@ protected:
     bool AppPreInit() override;
     bool AppInit() override;
     bool AppUpdate() override;
+    void AppInput(int key, int action) override;
 
 #ifdef OGLD_TRACK_MEMORY
     bool AppClosed() override
@@ -53,17 +54,24 @@ protected:
     void ImUpdate() override;
     void ImClosed() override;
 private:
+    struct Fog
+    {
+        bool draw{true};
+        bool set = !draw;
+    };
+
     void renderScene(ogld::Shader& shader, bool cullface);
-    ogld::Shader mShader{};
-    ogld::Shader mDepthShader{};
-    ogld::DepthFBO mDepthFBO{};
-    ogld::DepthMap mDepthMap{};
     CubeEntity mCube{};
     TerrainEntity mTerrain{};
-    ogld::UniformBuffer mUBO{};
+    ogld::Shader mShader{};
+    ogld::Shader mDepthShader{};
     glm::vec3 mLightPos{-2.0f, 4.0f, -1.0f};
+    ogld::DepthFBO mDepthFBO{};
+    ogld::DepthMap mDepthMap{};
+    ogld::UniformBuffer mUBO{};
 
-    bool DrawFog{false};
+    Fog mFog;
+
     bool DrawShadows{false};
 };
 
