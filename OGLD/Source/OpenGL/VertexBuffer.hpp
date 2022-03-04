@@ -11,6 +11,8 @@
 #include <cstdint>
 #include "OpenGL/gl_core_4_5.hpp"
 
+struct Vertex;
+
 namespace ogld
 {
     class VertexBuffer
@@ -20,6 +22,13 @@ namespace ogld
         ~VertexBuffer() { gl::DeleteBuffers(1, &mID); }
 
         void Create(uint32_t size, const float* pVertices)
+        {
+            gl::GenBuffers(1, &mID);
+            Bind();
+            gl::BufferData(gl::ARRAY_BUFFER, size, pVertices, gl::STATIC_DRAW);
+        }
+
+        void Create(uint32_t size, const Vertex* pVertices)
         {
             gl::GenBuffers(1, &mID);
             Bind();

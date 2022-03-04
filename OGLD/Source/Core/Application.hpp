@@ -94,14 +94,6 @@ namespace ogld
         static AppProps properties; // 16 bytes
     private:
         GLFWwindow* mWindow{}; // 8 bytes
-    protected:
-        struct Input
-        {
-            int key{};
-            int action{};
-            bool active{};
-        };
-        Input input;
     };
 
     std::shared_ptr<Application> CreateApplication();

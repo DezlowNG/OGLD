@@ -12,10 +12,11 @@ bool DemoApp::AppPreInit()
 {
     properties.vsync = 0;
     properties.title = "OGLD: Main Demo";
-    properties.msaa.enabled = true;
-    properties.msaa.level = 2;
+    properties.msaa.enabled = false;
+    properties.msaa.level = 0;
     properties.camera.enabled = true;
     properties.framerate.show = false;
+    mShadows.size = 4096;
 
     return true;
 }
@@ -28,10 +29,10 @@ bool DemoApp::AppInit()
     mShader.LoadFromFile("Shaders/shader.glsl");
     mDepthShader.LoadFromFile("Shaders/shadow_mapping.glsl");
 
-    mCube.Init("Textures/box_wood_diffuse.png", "Textures/box_wood_specular.png");
-    mTerrain.Init("Textures/terrain_diffuse.jpg");
+    mCube.Init("Textures/box/wood_diffuse.png", "Textures/box/wood_specular.png");
+    mTerrain.Init("Textures/terrain/diffuse.jpg");
 
-    mDepthMap.Create(1024);
+    mDepthMap.Create(mShadows.size);
     mDepthFBO.Create(mDepthMap.GetID());
 
     mShader.Use();
@@ -42,6 +43,21 @@ bool DemoApp::AppInit()
     mUBO.Init(3 * sizeof(glm::mat4));
     mUBO.PushBufferRange(0, 0, 3 * sizeof(glm::mat4));
     mShader.BindUniformBlock("Matrices");
+
+    mMesh.Load("Models/backpack/backpack.obj");
+
+    std::vector<const char*> faces
+    {
+        "Textures/skybox/right.jpg",
+        "Textures/skybox/left.jpg",
+        "Textures/skybox/top.jpg",
+        "Textures/skybox/bottom.jpg",
+        "Textures/skybox/front.jpg",
+        "Textures/skybox/back.jpg"
+    };
+
+    mSkyBox.Load(faces);
+    mSkyShader.LoadFromFile("Shaders/skybox.glsl");
 
     return true;
 }
@@ -54,37 +70,43 @@ bool DemoApp::AppUpdate()
     glm::mat4 view = GetCamera()->GetViewMatrix();
     glm::mat4 projection = glm::perspective(glm::radians(90.0f),
                                             (float)properties.width / (float)properties.height,
-                                            0.1f, 100.0f);
+                                            0.1f, mFog.draw ? mFog.maxDist : 100.0f);
 
-    mLightPos.x = sin(glfwGetTime()) * 3.0f;
-    mLightPos.z = cos(glfwGetTime()) * 2.0f;
-    mLightPos.y = 5.0 + cos(glfwGetTime()) * 1.0f;
+    if (mLight.move)
+    {
+        mLight.dt += GetDelta();
+        mLight.position.x = sin(mLight.dt) * 3.0f;
+        mLight.position.z = cos(mLight.dt) * 2.0f;
+        mLight.position.y = 5.0 + cos(mLight.dt) * 1.0f;
+    }
 
     glm::mat4 lightProjection{}, lightView{};
     glm::mat4 lightSpaceMatrix{};
 
-    if (DrawShadows)
+    if (mShadows.draw)
     {
         lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 10.0f);
-        lightView = glm::lookAt(mLightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+        lightView = glm::lookAt(mLight.position, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
         lightSpaceMatrix = lightProjection * lightView;
     }
 
     mShader.Use();
     mShader.SetUniform("viewPos", GetCamera()->GetPosition());
-    mShader.SetUniform("light.position", mLightPos);
-    mShader.SetUniform("uDrawShadows", DrawShadows);
+    mShader.SetUniform("light.position", mLight.position);
+    mShader.SetUniform("uDrawShadows", mShadows.draw);
     mShader.SetUniform("uDrawFog", mFog.draw);
+    mShader.SetUniform("uFog.MinDist", mFog.minDist);
+    mShader.SetUniform("uFog.MaxDist", mFog.maxDist);
 
     mUBO.Bind();
     mUBO.PushData(0, sizeof(glm::mat4), projection);
     mUBO.PushData(sizeof(glm::mat4), sizeof(glm::mat4), view);
-    if (DrawShadows)
+    if (mShadows.draw)
     {
         mUBO.PushData(2 * sizeof(glm::mat4), sizeof(glm::mat4), lightSpaceMatrix);
         mDepthShader.Use();
         mDepthShader.SetUniform("lightSpaceMatrix", lightSpaceMatrix);
-        gl::Viewport(0, 0, 1024, 1024);
+        gl::Viewport(0, 0, mShadows.size, mShadows.size);
         mDepthFBO.Bind();
         gl::Clear(gl::DEPTH_BUFFER_BIT);
         renderScene(mDepthShader, false);
@@ -105,10 +127,22 @@ bool DemoApp::AppUpdate()
         mFog.set = true;
     }
 
-    if (DrawShadows)
+    if (mShadows.draw)
     {
         gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
         mDepthMap.Bind();
+    }
+
+    if (!mFog.draw)
+    {
+        gl::DepthFunc(gl::LEQUAL);
+
+        mSkyShader.Use();
+        mSkyShader.SetUniform("projection", projection);
+        mSkyShader.SetUniform("view", glm::mat4(glm::mat3(view)));
+        mSkyBox.Draw();
+
+        gl::DepthFunc(gl::LESS);
     }
 
     renderScene(mShader, true);
@@ -121,26 +155,23 @@ bool DemoApp::AppUpdate()
 
 void DemoApp::renderScene(ogld::Shader& shader, bool cullface)
 {
+    shader.Use();
     glm::mat4 model{1.0f};
     shader.SetUniform("model", mTerrain.SetUpModel(model));
     mTerrain.Draw();
 
     if (cullface) gl::Enable(gl::CULL_FACE);
-    mCube.SetPosition(glm::vec3(0.0f, 1.5f, 0.0f));
+
+    model = glm::scale(model, glm::vec3(0.5f));
+    model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
+    shader.SetUniform("model", model);
+    mMesh.Draw();
+
     mCube.SetScale(glm::vec3(0.5f));
+    mCube.SetPosition(glm::vec3(1.0f, 0.25f, 2.0f));
     shader.SetUniform("model", mCube.SetUpModel(model));
     mCube.Draw();
 
-    mCube.SetPosition(glm::vec3(2.0f, 0.0f, 1.0f));
-    mCube.SetScale(glm::vec3(0.5f));
-    shader.SetUniform("model", mCube.SetUpModel(model));
-    mCube.Draw();
-
-    mCube.SetPosition(glm::vec3(-1.0f, 0.0f, 2.0f));
-    mCube.SetScale(glm::vec3(0.25f));
-    mCube.SetRotation(glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    shader.SetUniform("model", mCube.SetUpModel(model, true));
-    mCube.Draw();
     if (cullface) gl::Disable(gl::CULL_FACE);
 }
 
@@ -153,10 +184,17 @@ void DemoApp::ImUpdate()
             | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar
     );
 
-    ImGui::SetWindowSize(ImVec2(350, 50));
+    ImGui::SetWindowSize(ImVec2(350, 150));
     ImGui::SetWindowPos(ImVec2(0, 0));
+
     ImGui::Text("FPS: %.ffps", ImGui::GetIO().Framerate);
     ImGui::Text("Delta: %.2fms", GetDelta() * 1000.0f);
+
+    ImGui::Text("Press T to enable/disable fog;");
+    ImGui::Text("Press Y to enable/disable shadows;");
+    ImGui::Text("Press H to disable moving light;");
+    ImGui::Text("Press R to reload shaders;");
+
     ImGui::End();
 }
 void DemoApp::ImInit() {}
@@ -170,7 +208,25 @@ void DemoApp::AppInput(int key, int action)
         mFog.draw = !mFog.draw;
     }
     if (key == GLFW_KEY_Y && action == GLFW_PRESS)
-        DrawShadows = !DrawShadows;
+        mShadows.draw = !mShadows.draw;
+
+    if (key == GLFW_KEY_R && action == GLFW_PRESS)
+    {
+        mShader.Destroy();
+        mShader.LoadFromFile("Shaders/shader.glsl");
+
+        mShader.Use();
+        mShader.SetUniform("shadowMap", 0);
+        mShader.SetUniform("material.diffuse", 1);
+        mShader.SetUniform("material.specular", 2);
+
+        mUBO.Bind();
+        mShader.BindUniformBlock("Matrices");
+        mUBO.UnBind();
+    }
+
+    if (key == GLFW_KEY_H && action == GLFW_PRESS)
+        mLight.move = !mLight.move;
 }
 
 #endif

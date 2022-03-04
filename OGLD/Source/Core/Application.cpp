@@ -53,8 +53,6 @@ bool ogld::Application::MainLoop()
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 #endif
         glfwSwapBuffers(mWindow);
-
-        input.active = false;
     }
 
     return true;
@@ -158,10 +156,6 @@ void ogld::Application::KeyCallback(GLFWwindow* window, int key, int scancode, i
 {
     auto* app = reinterpret_cast<ogld::Application*>(glfwGetWindowUserPointer(window));
     app->AppInput(key, action);
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, 1);
-    }
     if (key == GLFW_KEY_G && action == GLFW_PRESS)
     {
         if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)

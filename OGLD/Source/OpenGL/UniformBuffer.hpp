@@ -22,15 +22,15 @@ namespace ogld
             UnBind();
         }
 
-        void PushBufferRange(int index, int offset, int size) {
+        void PushBufferRange(int index, int offset, int size) const {
             gl::BindBufferRange(gl::UNIFORM_BUFFER, index, mID, offset, size);
         }
 
-        void PushData(int offset, int size, const glm::mat4& matrix) {
+        void PushData(int offset, int size, const glm::mat4& matrix) const {
             gl::BufferSubData(gl::UNIFORM_BUFFER, offset, size, glm::value_ptr(matrix));
         }
 
-        void PushData(int offset, int size, const glm::vec3& vec) {
+        void PushData(int offset, int size, const glm::vec3& vec) const {
             gl::BufferSubData(gl::UNIFORM_BUFFER, offset, size, glm::value_ptr(vec));
         }
 

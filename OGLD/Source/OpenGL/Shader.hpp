@@ -29,6 +29,8 @@ namespace ogld
         void SetUniform(const char* uname, int uvalue);
         void SetUniform(const char* uname, const glm::vec3& uvalue);
         void SetUniform(const char* uname, const glm::mat4& uvalue);
+
+        void Destroy();
     private:
         mutable std::unordered_map<const char*, int> mUniformLocationCache;
         uint32_t mID{};

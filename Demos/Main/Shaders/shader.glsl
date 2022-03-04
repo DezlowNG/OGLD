@@ -19,9 +19,6 @@ layout (std140) uniform Matrices
 
 uniform mat4 model;
 
-uniform bool uDrawShadows;
-uniform bool uDrawFog;
-
 void main()
  {
      FragPos = vec3(model * vec4(aPos, 1.0));
@@ -37,24 +34,6 @@ void main()
 #version 330 core
 out vec4 FragColor;
 
-struct Material
-{
-    sampler2D diffuse;
-    sampler2D specular;
-    float shininess;
-};
-
-struct Light
-{
-    vec3 position;
-
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
-const float fog_maxdist = 15.0;
-const float fog_mindist = 2.0;
 
 in vec3 FragPos;
 in vec3 Normal;
@@ -62,18 +41,37 @@ in vec2 TexCoords;
 in vec4 FragPosLightSpace;
 in vec4 MVP;
 
-uniform vec3 viewPos;
-uniform Material material;
-uniform Light light;
+uniform struct Material
+{
+    sampler2D diffuse;
+    sampler2D specular;
+    float shininess;
+} material;
+
+uniform struct Light
+{
+    vec3 position;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+} light;
+
 uniform sampler2D shadowMap;
+uniform vec3 viewPos;
+
+uniform struct Fog
+{
+    float MinDist;
+    float MaxDist;
+} uFog;
 
 uniform bool uDrawShadows;
 uniform bool uDrawFog;
 
-float ShadowCalculation(vec4 fragPosLightSpace)
+float ShadowCalculation()
 {
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
+    vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w * 0.5 + 0.5;
     float closestDepth = texture(shadowMap, projCoords.xy).r;
     float currentDepth = projCoords.z;
     vec3 normal = normalize(Normal);
@@ -101,26 +99,26 @@ void main()
 {
     vec3 color = texture(material.diffuse, TexCoords).rgb;
     vec3 normal = normalize(Normal);
-    vec3 lightColor = vec3(0.3);
-    vec3 ambient = 0.2 * color;
+    vec3 lightColor = vec3(0.4);
+    vec3 ambient = 0.25 * color;
     vec3 lightDir = normalize(light.position - FragPos);
     float diff = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
     vec3 halfwayDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0);
-    vec3 specular = vec3(1.0) * spec * texture(material.specular, TexCoords).rgb;
+    float spec = 6.5 * pow(max(dot(normal, halfwayDir), 0.0), 64.0);
+    vec3 specular = vec3(2.0) * spec * texture(material.specular, TexCoords).rgb;
 
     vec3 lighting;
     if (uDrawShadows)
     {
-        float shadow = ShadowCalculation(FragPosLightSpace);
+        float shadow = ShadowCalculation();
         lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
     }
     else
     {
-        float shadow = ShadowCalculation(FragPosLightSpace);
+        float shadow = ShadowCalculation();
         lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * color;
     }
 
@@ -132,8 +130,8 @@ void main()
         vec4  fog_colour = vec4(0.4, 0.4, 0.4, 1.0);
 
         float dist = length(MVP.xyz);
-        float fog_factor = (fog_maxdist - dist) /
-                          (fog_maxdist - fog_mindist);
+        float fog_factor = (uFog.MaxDist - dist) /
+                          (uFog.MaxDist - uFog.MinDist);
         fog_factor = clamp(fog_factor, 0.0, 1.0);
 
         FragColor = mix(fog_colour, vec4(lighting, 1.0), fog_factor);

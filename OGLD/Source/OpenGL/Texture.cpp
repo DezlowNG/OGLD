@@ -37,7 +37,7 @@ void ogld::Texture::Load(const std::string& path, bool srgb, bool repeat)
         gl::GenerateMipmap(gl::TEXTURE_2D);
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, repeat ? gl::REPEAT : gl::CLAMP_TO_BORDER);
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, repeat ? gl::REPEAT : gl::CLAMP_TO_BORDER);
-        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR_MIPMAP_LINEAR);
+        gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::NEAREST_MIPMAP_NEAREST);
         gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::NEAREST_MIPMAP_NEAREST);
     }
     else

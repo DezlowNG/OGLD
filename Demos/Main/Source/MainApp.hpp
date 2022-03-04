@@ -18,6 +18,8 @@
 #include <OpenGL/Shader.hpp>
 #include <OpenGL/UniformBuffer.hpp>
 #include <Core/Entity.hpp>
+#include "OpenGL/Model.hpp"
+#include "OpenGL/SkyBox.hpp"
 
 class CubeEntity : public ogld::Entity
 {
@@ -54,25 +56,41 @@ protected:
     void ImUpdate() override;
     void ImClosed() override;
 private:
+    struct Light
+    {
+        glm::vec3 position{-2.0f, 4.0f, -1.0f};
+        float dt{};
+        bool move{true};
+    };
+
     struct Fog
     {
+        float maxDist = 20.0f;
+        float minDist = 2.0f;
         bool draw{true};
         bool set = !draw;
     };
 
+    struct Shadows
+    {
+        int16_t size{1024};
+        bool draw{false};
+    };
+
     void renderScene(ogld::Shader& shader, bool cullface);
+    ogld::Model mMesh;
     CubeEntity mCube{};
     TerrainEntity mTerrain{};
     ogld::Shader mShader{};
     ogld::Shader mDepthShader{};
-    glm::vec3 mLightPos{-2.0f, 4.0f, -1.0f};
+    ogld::Shader mSkyShader{};
     ogld::DepthFBO mDepthFBO{};
     ogld::DepthMap mDepthMap{};
     ogld::UniformBuffer mUBO{};
-
+    Light mLight;
     Fog mFog;
-
-    bool DrawShadows{false};
+    Shadows mShadows;
+    ogld::SkyBox mSkyBox;
 };
 
 std::shared_ptr<ogld::Application> ogld::CreateApplication()

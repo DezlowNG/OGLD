@@ -119,6 +119,12 @@ void ogld::Shader::BindUniformBlock(const char* name) const
     gl::UniformBlockBinding(mID, gl::GetUniformBlockIndex(mID, name), 0);
 }
 
+void ogld::Shader::Destroy()
+{
+    gl::DeleteShader(mID);
+    mUniformLocationCache.clear();
+}
+
 uint32_t CreateVertexShader(const char* shaderSrc)
 {
     uint32_t shaderID = gl::CreateShader(gl::VERTEX_SHADER);

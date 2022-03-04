@@ -18,21 +18,30 @@ namespace ogld
         {
             gl::DeleteBuffers(1, &mID);
         }
-        void Init(const uint32_t* data, uint32_t count)
+
+        void Init(const uint32_t* data, size_t count)
         {
             gl::GenBuffers(1, &mID);
             Bind();
-            gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), data, gl::STATIC_DRAW);
+            gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, count, data, gl::STATIC_DRAW);
+            SetElementCount(count);
         }
+
         void Bind() const
         {
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, mID);
         }
+
         void UnBind() const
         {
             gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0);
         }
+
+        [[nodiscard]] inline constexpr size_t GetElementCount() const { return mElementCount; }
     private:
+        constexpr void SetElementCount(size_t count) { mElementCount = count / sizeof(uint32_t); }
+
+        size_t mElementCount{};
         uint32_t mID{};
     };
 }
