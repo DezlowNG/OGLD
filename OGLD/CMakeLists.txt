@@ -44,6 +44,7 @@ add_library(OGLD_LIBRARY STATIC ${OGLD_SRC} ${IMGUI_SRC})
 add_subdirectory(../ThirdParty/glfw ThirdParty/glfw)
 add_subdirectory(../ThirdParty/glm ThirdParty/glm)
 add_subdirectory(../ThirdParty/OpenGL ThirdParty/OpenGL)
+add_subdirectory(../ThirdParty/tinyobj ThirdParty/tinyobj)
 
 if (${OGLD_USE_IMGUI})
     target_include_directories(OGLD_LIBRARY PUBLIC
@@ -52,10 +53,12 @@ if (${OGLD_USE_IMGUI})
 endif()
 target_include_directories(OGLD_LIBRARY PUBLIC
         ../ThirdParty/
+        ../ThirdParty/tinyobj/experimental
         )
 
 target_link_libraries(OGLD_LIBRARY
         OGL
         glfw
         glm
+        tinyobjloader
         )
