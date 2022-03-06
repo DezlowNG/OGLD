@@ -52,9 +52,11 @@ protected:
 #else
     bool AppClosed() override { return true; }
 #endif
+#if OGLD_USE_IMGUI
     void ImInit() override;
     void ImUpdate() override;
     void ImClosed() override;
+#endif
 private:
     struct Light
     {
@@ -78,7 +80,8 @@ private:
     };
 
     void renderScene(ogld::Shader& shader, bool cullface);
-    ogld::Model mMesh;
+    ogld::Model mBackpack;
+    ogld::SkyBox mSkyBox;
     CubeEntity mCube{};
     TerrainEntity mTerrain{};
     ogld::Shader mShader{};
@@ -90,7 +93,7 @@ private:
     Light mLight;
     Fog mFog;
     Shadows mShadows;
-    ogld::SkyBox mSkyBox;
+    bool DrawEditor{false};
 };
 
 std::shared_ptr<ogld::Application> ogld::CreateApplication()

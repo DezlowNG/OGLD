@@ -24,8 +24,17 @@ bool ogld::Application::MainLoop()
     {
         glfwPollEvents();
 
-        gl::ClearColor(properties.bg[0], properties.bg[1], properties.bg[2], properties.bg[3]);
-        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
+#if OGLD_USE_IMGUI
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImUpdate();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
+        mAppCamera.keyboard_callback(mWindow, mDeltaTime.delta);
 
         mDeltaTime.currentFrame = glfwGetTime();
         mDeltaTime.delta = mDeltaTime.currentFrame - mDeltaTime.lastFrame;
@@ -38,21 +47,14 @@ bool ogld::Application::MainLoop()
                 CalculateFPS();
         }
 
-        mAppCamera.keyboard_callback(mWindow, mDeltaTime.delta);
+        gl::ClearColor(properties.bg[0], properties.bg[1], properties.bg[2], properties.bg[3]);
+        gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 
         if (!AppUpdate()) return false;
 
-#if OGLD_USE_IMGUI
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
 
-        ImUpdate();
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-#endif
         glfwSwapBuffers(mWindow);
+
     }
 
     return true;
@@ -120,9 +122,10 @@ void ogld::Application::Run()
     glVersion.clear();
 #endif
 
+    glfwSetWindowUserPointer(mWindow, this);
+
     if (properties.camera.enabled)
     {
-        glfwSetWindowUserPointer(mWindow, this);
         glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursorPosCallback(mWindow, Application::MouseCallback);
     }

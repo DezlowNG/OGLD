@@ -12,11 +12,11 @@ bool DemoApp::AppPreInit()
 {
     properties.vsync = 0;
     properties.title = "OGLD: Main Demo";
-    properties.msaa.enabled = false;
-    properties.msaa.level = 0;
+    properties.msaa.enabled = true;
+    properties.msaa.level = 4;
     properties.camera.enabled = true;
     properties.framerate.show = false;
-    mShadows.size = 4096;
+    mShadows.size = 1024;
 
     return true;
 }
@@ -36,15 +36,16 @@ bool DemoApp::AppInit()
     mDepthFBO.Create(mDepthMap.GetID());
 
     mShader.Use();
-    mShader.SetUniform("shadowMap", 0);
-    mShader.SetUniform("material.diffuse", 1);
-    mShader.SetUniform("material.specular", 2);
+    mShader.SetUniform("uShadowsMap", 0);
+    mShader.SetUniform("uMaterial.diffuse", 1);
+    mShader.SetUniform("uMaterial.specular", 2);
 
     mUBO.Init(3 * sizeof(glm::mat4));
     mUBO.PushBufferRange(0, 0, 3 * sizeof(glm::mat4));
     mShader.BindUniformBlock("Matrices");
 
-    mMesh.Load("Models/backpack/backpack.obj");
+    if (false)
+        mBackpack.Load("Models/backpack/backpack.obj");
 
     std::vector<const char*> faces
     {
@@ -91,12 +92,12 @@ bool DemoApp::AppUpdate()
     }
 
     mShader.Use();
-    mShader.SetUniform("viewPos", GetCamera()->GetPosition());
-    mShader.SetUniform("light.position", mLight.position);
-    mShader.SetUniform("uDrawShadows", mShadows.draw);
-    mShader.SetUniform("uDrawFog", mFog.draw);
-    mShader.SetUniform("uFog.MinDist", mFog.minDist);
-    mShader.SetUniform("uFog.MaxDist", mFog.maxDist);
+    mShader.SetUniform("uViewPos", GetCamera()->GetPosition());
+    mShader.SetUniform("uLight.position", mLight.position);
+    mShader.SetUniform("uShadows.draw", mShadows.draw);
+    mShader.SetUniform("uFog.draw", mFog.draw);
+    mShader.SetUniform("uFog.minDist", mFog.minDist);
+    mShader.SetUniform("uFog.maxDist", mFog.maxDist);
 
     mUBO.Bind();
     mUBO.PushData(0, sizeof(glm::mat4), projection);
@@ -162,10 +163,13 @@ void DemoApp::renderScene(ogld::Shader& shader, bool cullface)
 
     if (cullface) gl::Enable(gl::CULL_FACE);
 
-    model = glm::scale(model, glm::vec3(0.5f));
-    model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
-    shader.SetUniform("model", model);
-    mMesh.Draw();
+    if (false)
+    {
+        model = glm::scale(model, glm::vec3(0.45f));
+        model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
+        shader.SetUniform("model", model);
+        mBackpack.Draw();
+    }
 
     mCube.SetScale(glm::vec3(0.5f));
     mCube.SetPosition(glm::vec3(1.0f, 0.25f, 2.0f));
@@ -188,27 +192,44 @@ void DemoApp::ImUpdate()
     ImGui::SetWindowPos(ImVec2(0, 0));
 
     ImGui::Text("FPS: %.ffps", ImGui::GetIO().Framerate);
-    ImGui::Text("Delta: %.2fms", GetDelta() * 1000.0f);
+    ImGui::Text("Frame time: %.2fms", GetDelta() * 1000.0f);
 
-    ImGui::Text("Press T to enable/disable fog;");
-    ImGui::Text("Press Y to enable/disable shadows;");
-    ImGui::Text("Press H to disable moving light;");
+    ImGui::Text("Press T to enable/disable fog; Enabled: %i", mFog.draw);
+    ImGui::Text("Press Y to enable/disable shadows; Enabled: %i", mShadows.draw);
+    ImGui::Text("Press H to disable moving light; Enabled: %i", mLight.move);
     ImGui::Text("Press R to reload shaders;");
 
     ImGui::End();
+
+    if (DrawEditor)
+    {
+        ImGui::Begin("Editor");
+        if (ImGui::CollapsingHeader("Fog"))
+        {
+            ImGui::DragFloat("Minimum distance", &mFog.minDist, 0.05f, -5.0f, 100.0f);
+            ImGui::DragFloat("Maximum distance", &mFog.maxDist, 0.05f, -100.0f, 1000.0f);
+        }
+        ImGui::End();
+    }
 }
 void DemoApp::ImInit() {}
 void DemoApp::ImClosed() {}
+#endif
 
 void DemoApp::AppInput(int key, int action)
 {
-    if (key == GLFW_KEY_T && action == GLFW_PRESS)
-    {
-        mFog.set = false;
-        mFog.draw = !mFog.draw;
+    if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+        mFog.set = false; mFog.draw = !mFog.draw;
     }
+
     if (key == GLFW_KEY_Y && action == GLFW_PRESS)
         mShadows.draw = !mShadows.draw;
+
+    if (key == GLFW_KEY_H && action == GLFW_PRESS)
+        mLight.move = !mLight.move;
+
+    if (key == GLFW_KEY_E && action == GLFW_PRESS)
+        DrawEditor = !DrawEditor;
 
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
     {
@@ -225,11 +246,7 @@ void DemoApp::AppInput(int key, int action)
         mUBO.UnBind();
     }
 
-    if (key == GLFW_KEY_H && action == GLFW_PRESS)
-        mLight.move = !mLight.move;
 }
-
-#endif
 
 void CubeEntity::Init(const std::string& difPath, const std::string& specPath)
 {

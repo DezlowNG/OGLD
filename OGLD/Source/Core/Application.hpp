@@ -71,7 +71,7 @@ namespace ogld
         virtual bool AppInit() = 0;
         virtual bool AppUpdate() = 0;
         virtual bool AppClosed() = 0;
-        virtual void AppInput(int key, int action) {}
+        virtual void AppInput(int key, int action) = 0;
 #if OGLD_USE_IMGUI
         virtual void ImInit() = 0;
         virtual void ImUpdate() = 0;
