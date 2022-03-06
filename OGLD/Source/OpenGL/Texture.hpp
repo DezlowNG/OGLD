@@ -29,10 +29,13 @@ namespace ogld
         void Bind(size_t index) const;
         void UnBind() const;
 
+        bool IsLoaded() { return isLoaded; }
+
         [[nodiscard]] const TextureData& GetData() const { return mData; }
     private:
         TextureData mData{};
         uint32_t mID{};
+        bool isLoaded{false};
     };
 }
 
