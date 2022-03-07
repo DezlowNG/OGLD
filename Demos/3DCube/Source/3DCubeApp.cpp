@@ -4,6 +4,7 @@
 //
 
 #include "3DCubeApp.hpp"
+#include "OpenGL/Renderer.hpp"
 
 bool DemoApp::AppPreInit()
 {
@@ -49,6 +50,18 @@ bool DemoApp::AppUpdate()
     ASSERT(ogld::ErrorHandler::GLLogCall());
 #endif
     return true;
+}
+
+void DemoApp::AppInput(int key, int action)
+{
+    if (key == GLFW_KEY_G && action == GLFW_PRESS)
+    {
+        if (isMouseInputEnabled()) {
+            DisableMouseInput();
+        } else {
+            EnableMouseInput();
+        }
+    }
 }
 
 void CubeEntity::Init()
@@ -108,5 +121,5 @@ void CubeEntity::Init()
 void CubeEntity::Draw()
 {
     mVAO.Bind();
-    gl::DrawArrays(gl::TRIANGLES, 0, 36);
+    ogld::Renderer::DrawArrays(ogld::Renderer::TRIANGLES, 36);
 }

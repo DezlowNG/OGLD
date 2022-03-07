@@ -4,6 +4,7 @@
 //
 
 #include "TriangleApp.hpp"
+#include "OpenGL/Renderer.hpp"
 
 bool DemoApp::AppPreInit()
 {
@@ -18,13 +19,13 @@ bool DemoApp::AppPreInit()
 
 bool DemoApp::AppInit()
 {
-    mShader.LoadFromFile("Shaders/shader.glsl");
-
     constexpr const float vertices[] = {
            -0.5f, -0.5f, 0.0f,
             0.5f, -0.5f, 0.0f,
             0.0f,  0.5f, 0.0f
     };
+
+    mShader.LoadFromFile("Shaders/shader.glsl");
 
     mVAO.Init();
     mVAO.Bind();
@@ -40,9 +41,9 @@ bool DemoApp::AppUpdate()
     ogld::ErrorHandler::GLClearError();
 #endif
     mShader.Use();
-    mShader.SetUniform("uColor", glm::vec3(1.0f, 0.5f, 1.0f));
+    mShader.SetUniform("uColor", mTriangleColor);
     mVAO.Bind();
-    gl::DrawArrays(gl::TRIANGLES, 0, 3);
+    ogld::Renderer::DrawArrays(ogld::Renderer::DrawMode::TRIANGLES, 3);
 #ifdef OGLD_DEBUG
     ASSERT(ogld::ErrorHandler::GLLogCall());
 #endif

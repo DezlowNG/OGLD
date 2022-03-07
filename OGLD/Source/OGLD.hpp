@@ -54,7 +54,7 @@
 #endif
 
 #if defined(OGLD_TRACK_MEMORY)
-static int64_t allocMemory{};
+static uint32_t allocMemory{};
 void* operator new(size_t size)
 {
     std::cout << "Allocating " << size << " bytes\n";

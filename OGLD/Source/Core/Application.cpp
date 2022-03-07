@@ -24,16 +24,6 @@ bool ogld::Application::MainLoop()
     {
         glfwPollEvents();
 
-#if OGLD_USE_IMGUI
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        ImUpdate();
-
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-#endif
         mAppCamera.keyboard_callback(mWindow, mDeltaTime.delta);
 
         mDeltaTime.currentFrame = glfwGetTime();
@@ -52,6 +42,16 @@ bool ogld::Application::MainLoop()
 
         if (!AppUpdate()) return false;
 
+#if OGLD_USE_IMGUI
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImUpdate();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+#endif
 
         glfwSwapBuffers(mWindow);
 
@@ -128,6 +128,7 @@ void ogld::Application::Run()
     {
         glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         glfwSetCursorPosCallback(mWindow, Application::MouseCallback);
+        mIsMouseInputEnabled = true;
     }
     glfwSetFramebufferSizeCallback(mWindow, Application::framebuffer_size_callback);
     glfwSetKeyCallback(mWindow, Application::KeyCallback);
@@ -159,19 +160,6 @@ void ogld::Application::KeyCallback(GLFWwindow* window, int key, int scancode, i
 {
     auto* app = reinterpret_cast<ogld::Application*>(glfwGetWindowUserPointer(window));
     app->AppInput(key, action);
-    if (key == GLFW_KEY_G && action == GLFW_PRESS)
-    {
-        if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
-        {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            glfwSetCursorPosCallback(window, nullptr);
-        }
-        else
-        {
-            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            glfwSetCursorPosCallback(window, Application::MouseCallback);
-        }
-    }
 }
 
 void ogld::Application::MouseCallback(GLFWwindow* window, double xpos, double ypos)
@@ -186,4 +174,24 @@ void ogld::Application::framebuffer_size_callback(GLFWwindow* window, int width,
     app->properties.width = width;
     app->properties.height = height;
     gl::Viewport(0, 0, width, height);
+}
+
+void ogld::Application::EnableMouseInput()
+{
+    if (glfwGetInputMode(mWindow, GLFW_CURSOR) == GLFW_CURSOR_NORMAL)
+    {
+        glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetCursorPosCallback(mWindow, Application::MouseCallback);
+        mIsMouseInputEnabled = true;
+    } else { mIsMouseInputEnabled = false; }
+}
+
+void ogld::Application::DisableMouseInput()
+{
+    if (glfwGetInputMode(mWindow, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+    {
+        glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetCursorPosCallback(mWindow, nullptr);
+        mIsMouseInputEnabled = false;
+    } else { mIsMouseInputEnabled = true; }
 }

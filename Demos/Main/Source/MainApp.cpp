@@ -4,6 +4,7 @@
 //
 
 #include "MainApp.hpp"
+#include "OpenGL/Renderer.hpp"
 #if OGLD_USE_IMGUI
 #include "ImGui/imgui.h"
 #endif
@@ -12,7 +13,7 @@ bool DemoApp::AppPreInit()
 {
     properties.vsync = 0;
     properties.title = "OGLD: Main Demo";
-    properties.msaa.enabled = true;
+    properties.msaa.enabled = false;
     properties.msaa.level = 4;
     properties.camera.enabled = true;
     properties.framerate.show = false;
@@ -44,8 +45,7 @@ bool DemoApp::AppInit()
     mUBO.PushBufferRange(0, 0, 3 * sizeof(glm::mat4));
     mShader.BindUniformBlock("Matrices");
 
-    if (false)
-        mBackpack.Load("Models/backpack/backpack.obj");
+    mBackpack.Load("Models/backpack/backpack.obj");
 
     std::vector<const char*> faces
     {
@@ -94,7 +94,7 @@ bool DemoApp::AppUpdate()
     mShader.Use();
     mShader.SetUniform("uViewPos", GetCamera()->GetPosition());
     mShader.SetUniform("uLight.position", mLight.position);
-    mShader.SetUniform("uShadows.draw", mShadows.draw);
+    mShader.SetUniform("uShadowsDraw", mShadows.draw);
     mShader.SetUniform("uFog.draw", mFog.draw);
     mShader.SetUniform("uFog.minDist", mFog.minDist);
     mShader.SetUniform("uFog.maxDist", mFog.maxDist);
@@ -114,8 +114,6 @@ bool DemoApp::AppUpdate()
         mDepthFBO.UnBind();
         gl::Viewport(0, 0, properties.width, properties.height);
     }
-
-    mShader.Use();
 
     if (mFog.draw && !mFog.set)
     {
@@ -145,7 +143,6 @@ bool DemoApp::AppUpdate()
 
         gl::DepthFunc(gl::LESS);
     }
-
     renderScene(mShader, true);
 
 #ifdef OGLD_DEBUG
@@ -163,13 +160,10 @@ void DemoApp::renderScene(ogld::Shader& shader, bool cullface)
 
     if (cullface) gl::Enable(gl::CULL_FACE);
 
-    if (false)
-    {
-        model = glm::scale(model, glm::vec3(0.45f));
-        model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
-        shader.SetUniform("model", model);
-        mBackpack.Draw();
-    }
+    model = glm::scale(model, glm::vec3(0.45f));
+    model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
+    shader.SetUniform("model", model);
+    mBackpack.Draw();
 
     mCube.SetScale(glm::vec3(0.5f));
     mCube.SetPosition(glm::vec3(1.0f, 0.25f, 2.0f));
@@ -237,15 +231,24 @@ void DemoApp::AppInput(int key, int action)
         mShader.LoadFromFile("Shaders/shader.glsl");
 
         mShader.Use();
-        mShader.SetUniform("shadowMap", 0);
-        mShader.SetUniform("material.diffuse", 1);
-        mShader.SetUniform("material.specular", 2);
+        mShader.SetUniform("uShadowsMap", 0);
+        mShader.SetUniform("uMaterial.diffuse", 1);
+        mShader.SetUniform("uMaterial.specular", 2);
 
         mUBO.Bind();
         mShader.BindUniformBlock("Matrices");
         mUBO.UnBind();
     }
 
+    if (key == GLFW_KEY_G && action == GLFW_PRESS)
+    {
+        if (isMouseInputEnabled())
+            DisableMouseInput();
+        else {
+            DrawEditor = false;
+            EnableMouseInput();
+        }
+    }
 }
 
 void CubeEntity::Init(const std::string& difPath, const std::string& specPath)
@@ -312,7 +315,7 @@ void CubeEntity::Draw()
     mVAO.Bind();
     mTextures.diffuse.Bind(1);
     mTextures.specular.Bind(2);
-    gl::DrawArrays(gl::TRIANGLES, 0, 36);
+    ogld::Renderer::DrawArrays(ogld::Renderer::TRIANGLES, 36);
     mTextures.diffuse.UnBind();
     mTextures.specular.UnBind();
 }
@@ -345,6 +348,6 @@ void TerrainEntity::Draw()
 {
     mTextures.diffuse.Bind(1);
     mVAO.Bind();
-    gl::DrawArrays(gl::TRIANGLES, 0, 6);
+    ogld::Renderer::DrawArrays(ogld::Renderer::TRIANGLES, 6);
     mTextures.diffuse.UnBind();
 }

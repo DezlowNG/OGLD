@@ -77,9 +77,13 @@ namespace ogld
         virtual void ImUpdate() = 0;
         virtual void ImClosed() = 0;
 #endif
+        [[nodiscard]] bool isMouseInputEnabled() const { return mIsMouseInputEnabled; }
         [[nodiscard]] float GetDelta() const { return mDeltaTime.delta; }
         GLFWwindow* GetWindow() { return mWindow; }
+
         const Camera* GetCamera() { return &mAppCamera; }
+        void EnableMouseInput();
+        void DisableMouseInput();
     private:
         bool MainLoop();
         void CalculateFPS();
@@ -94,6 +98,7 @@ namespace ogld
         static AppProps properties; // 16 bytes
     private:
         GLFWwindow* mWindow{}; // 8 bytes
+        bool mIsMouseInputEnabled{};
     };
 
     std::shared_ptr<Application> CreateApplication();

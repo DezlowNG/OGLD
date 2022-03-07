@@ -32,6 +32,7 @@ protected:
     bool AppPreInit() override;
     bool AppInit() override;
     bool AppUpdate() override;
+    void AppInput(int key, int action) override;
 #ifdef OGLD_TRACK_MEMORY
     bool AppClosed() override
     {
@@ -41,9 +42,7 @@ protected:
 #else
     bool AppClosed() override { return true; }
 #endif
-
 private:
-    void renderScene(ogld::Shader& shader);
     ogld::Shader mShader{};
     CubeEntity mCube{};
     ogld::UniformBuffer UBO{};

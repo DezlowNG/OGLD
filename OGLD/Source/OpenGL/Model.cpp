@@ -13,6 +13,8 @@
 
 #include <iostream>
 
+#include "Renderer.hpp"
+
 void ogld::Model::Load(const std::string& path)
 {
     tinyobj::ObjReaderConfig reader_config;
@@ -108,7 +110,7 @@ void ogld::Model::Draw() const
     mEBO.Bind();
     mTextures.diffuse.Bind(1);
     mTextures.specular.Bind(2);
-    gl::DrawElements(gl::TRIANGLES, mEBO.GetElementCount(), gl::UNSIGNED_INT, nullptr);
+    Renderer::DrawElements(Renderer::TRIANGLES, mEBO.GetElementCount(), Renderer::UNSIGNED_INT);
     mTextures.diffuse.UnBind();
     mTextures.specular.UnBind();
 }

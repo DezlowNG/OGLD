@@ -24,6 +24,7 @@ protected:
     bool AppPreInit() override;
     bool AppInit() override;
     bool AppUpdate() override;
+    void AppInput(int key, int action) override {}
 #ifdef OGLD_TRACK_MEMORY
     bool AppClosed() override
     {
@@ -34,6 +35,7 @@ protected:
     bool AppClosed() override { return true; }
 #endif
 private:
+    glm::vec3 mTriangleColor{1.0f};
     ogld::Shader mShader{};
     ogld::VertexArray mVAO{};
     ogld::VertexBuffer mVBO{};
